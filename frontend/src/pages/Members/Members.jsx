@@ -172,6 +172,7 @@ function MemberModal({ member, plans, dietPlans: initialDietPlans, onClose, onSa
 
         const res = await api.post("/members/list/", {
           ...form,
+          dob:             form.dob || null,
           plan_id:         form.plan || undefined,
           diet_id:         form.diet || undefined,
           foodType:        form.foodType || "veg",
