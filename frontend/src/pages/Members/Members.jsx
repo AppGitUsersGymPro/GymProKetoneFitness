@@ -26,6 +26,7 @@ function MemberModal({ member, plans, dietPlans: initialDietPlans, onClose, onSa
     }
     : {
       name: "", phone: "", email: "", gender: "", plan: "", plan_type: "basic", diet: "",
+      dob: "", gym_member_id: "",
       joining_date: new Date().toISOString().slice(0, 10),
       renewal_date: "", notes: "", status: "active", amount_paid: "", foodType: "veg", personal_trainer: false,
       mode_of_payment: "cash"
@@ -148,6 +149,8 @@ function MemberModal({ member, plans, dietPlans: initialDietPlans, onClose, onSa
             address: form.address || "",
             notes: form.notes || "",
             age: form.age || undefined,
+            dob: form.dob || undefined,
+            gym_member_id: form.gym_member_id || "",
             plan: form.plan || undefined,
             plan_id: form.plan || undefined,
             diet: form.diet || undefined,
@@ -216,6 +219,17 @@ function MemberModal({ member, plans, dietPlans: initialDietPlans, onClose, onSa
               <label className="form-label">Age</label>
               <input className="form-input" type="number" min="1" max="120" value={form.age || ""}
                 onChange={e => set("age", e.target.value)} />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Date of Birth</label>
+              <input className="form-input" type="date" value={form.dob || ""}
+                onChange={e => set("dob", e.target.value)} />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Gym ID (from gym end)</label>
+              <input className="form-input" value={form.gym_member_id || ""}
+                onChange={e => set("gym_member_id", e.target.value)}
+                placeholder="e.g. GYM-001 (optional)" />
             </div>
             <div className="form-group">
               <label className="form-label">Phone *</label>
@@ -1251,9 +1265,11 @@ export default function Members() {
   const [count, setCount] = useState(0);
   const [bill, setBill] = useState(null);
   const [gymInfo, setGymInfo] = useState({});       // status filter
-  const [planFilter, setPlanFilter] = useState("");           // plan id filter
-  const [balanceFilter, setBalanceFilter] = useState("");           // has_balance | no_balance | ""
-  const [expiringDays, setExpiringDays] = useState("");           // number string | ""
+  const [planFilter, setPlanFilter] = useState("");
+  const [balanceFilter, setBalanceFilter] = useState("");
+  const [expiringDays, setExpiringDays] = useState("");
+  const [dobFrom, setDobFrom] = useState("");
+  const [dobTo, setDobTo] = useState("");
   const [confirmState, setConfirmState] = useState(null);
   const [viewMember, setViewMember] = useState(null);
   const [dietUpgradeMemberId, setDietUpgradeMemberId] = useState(null);
@@ -1271,6 +1287,8 @@ export default function Members() {
       if (planFilter) params.plan = planFilter;
       if (balanceFilter) params.balance_filter = balanceFilter;
       if (expiringDays) params.expiring_days = expiringDays;
+      if (dobFrom) params.dob_from = dobFrom;
+      if (dobTo) params.dob_to = dobTo;
 
       const [mRes, pRes, dRes] = await Promise.all([
         api.get("/members/list/", { params }),
@@ -1284,7 +1302,7 @@ export default function Members() {
       setPlans(pRes.data.results || pRes.data);
       setDietPlans(Array.isArray(dRes.data) ? dRes.data : (dRes.data.results ?? []));
     } finally { setLoading(false); }
-  }, [search, filter, planFilter, balanceFilter, expiringDays, page]);
+  }, [search, filter, planFilter, balanceFilter, expiringDays, dobFrom, dobTo, page]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -1293,11 +1311,13 @@ export default function Members() {
     setPlanFilter("");
     setBalanceFilter("");
     setExpiringDays("");
+    setDobFrom("");
+    setDobTo("");
     setSearch("");
     setPage(1);
   };
 
-  const hasActiveFilters = filter !== "all" || planFilter || balanceFilter || expiringDays || search;
+  const hasActiveFilters = filter !== "all" || planFilter || balanceFilter || expiringDays || search || dobFrom || dobTo;
 
   const closeModal = () => { setModal(null); setSelected(null); };
   const afterSave = (data) => {
@@ -1413,7 +1433,7 @@ export default function Members() {
             <circle cx="11" cy="11" r="8" />
             <path d="m21 21-4.35-4.35" />
           </svg>
-          <input className="form-input" placeholder="Search name, phone…" value={search}
+          <input className="form-input" placeholder="Search name, phone, gym ID…" value={search}
             onChange={e => { setSearch(e.target.value); setPage(1); }} style={{ paddingLeft: 38 }} />
         </div>
 
@@ -1453,6 +1473,33 @@ export default function Members() {
             <option value="has_balance">⚠ Has Balance Due</option>
             <option value="no_balance">✓ Fully Paid</option>
           </select>
+
+          {/* DOB date range filter */}
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <span style={{ fontSize: 12, color: "var(--text3)", whiteSpace: "nowrap" }}>DOB</span>
+            <input
+              className="form-input"
+              type="date"
+              value={dobFrom}
+              onChange={e => { setDobFrom(e.target.value); setPage(1); }}
+              style={{ width: 140, fontSize: 12 }}
+              title="DOB from"
+            />
+            <span style={{ fontSize: 12, color: "var(--text3)" }}>–</span>
+            <input
+              className="form-input"
+              type="date"
+              value={dobTo}
+              onChange={e => { setDobTo(e.target.value); setPage(1); }}
+              style={{ width: 140, fontSize: 12 }}
+              title="DOB to"
+            />
+            {(dobFrom || dobTo) && (
+              <button
+                style={{ fontSize: 11, color: "var(--text3)", background: "none", border: "none", cursor: "pointer", padding: "0 4px" }}
+                onClick={() => { setDobFrom(""); setDobTo(""); setPage(1); }}>✕</button>
+            )}
+          </div>
 
           {/* Expiring within N days */}
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
@@ -1525,95 +1572,130 @@ export default function Members() {
           <div className="table-wrap">
             <table>
               <thead><tr>
-                <th>ID</th><th>Member</th><th>Phone</th><th>Plan</th><th>Plan Type</th>
-                <th>Renewal</th><th>Days Left</th>
-                <th>Paid</th><th>Balance</th>
-                <th>Status</th><th>Actions</th>
+                <th>Member</th>
+                <th>Plan</th>
+                <th>Renewal</th>
+                <th style={{ textAlign: "right" }}>Financials</th>
+                <th>Status</th>
+                <th>Actions</th>
               </tr></thead>
               <tbody>
                 {loading ? (
-                  <tr><td colSpan={10} style={{ textAlign: "center", padding: 40, color: "var(--text3)" }}>Loading…</td></tr>
+                  <tr><td colSpan={6} style={{ textAlign: "center", padding: 40, color: "var(--text3)" }}>Loading…</td></tr>
                 ) : members.length === 0 ? (
-                  <tr><td colSpan={10} style={{ textAlign: "center", padding: 40, color: "var(--text3)" }}>No members found</td></tr>
+                  <tr><td colSpan={6} style={{ textAlign: "center", padding: 40, color: "var(--text3)" }}>No members found</td></tr>
                 ) : members.map(m => (
                   <tr key={m.id}>
-                    <td>
-                      <span style={{
-                        fontFamily: "var(--font-mono)", fontSize: 12,
-                        color: "var(--accent)", fontWeight: 700,
-                        background: "var(--accent-dim)", padding: "2px 8px", borderRadius: 6
-                      }}>
-                        {m.member_id_display || `M${String(m.id).padStart(4, "0")}`}
-                      </span>
+
+                    {/* ── Member cell: IDs + name + contact + DOB ── */}
+                    <td style={{ minWidth: 200 }}>
+                      <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap", marginBottom: 3 }}>
+                        <span style={{
+                          fontFamily: "var(--font-mono)", fontSize: 11,
+                          color: "var(--accent)", fontWeight: 700,
+                          background: "var(--accent-dim)", padding: "1px 6px", borderRadius: 4
+                        }}>
+                          {m.member_id_display || `M${String(m.id).padStart(4, "0")}`}
+                        </span>
+                        {m.gym_member_id && (
+                          <span style={{
+                            fontFamily: "var(--font-mono)", fontSize: 11,
+                            color: "var(--text3)", background: "var(--surface2)",
+                            padding: "1px 6px", borderRadius: 4, border: "1px solid var(--border)"
+                          }}>
+                            {m.gym_member_id}
+                          </span>
+                        )}
+                      </div>
+                      <div style={{ fontWeight: 600, fontSize: 13 }}>{m.name}</div>
+                      <div style={{ fontSize: 11, color: "var(--text3)", marginTop: 2 }}>
+                        {m.phone}
+                        {m.email && <span> · {m.email}</span>}
+                      </div>
+                      {m.dob && (
+                        <div style={{ fontSize: 11, color: "var(--text3)", marginTop: 1 }}>
+                          DOB: {m.dob}
+                        </div>
+                      )}
                     </td>
-                    <td>
-                      <div style={{ fontWeight: 600 }}>{m.name}</div>
-                      <div style={{ fontSize: 11, color: "var(--text3)" }}>{m.email}</div>
-                    </td>
-                    <td style={{ color: "var(--text2)" }}>{m.phone}</td>
-                    <td style={{ fontSize: 12 }}>
-                      <div>{m.plan_name || <span style={{ color: "var(--text3)" }}>No Plan</span>}</div>
+
+                    {/* ── Plan cell: name + type + diet ── */}
+                    <td style={{ minWidth: 150 }}>
+                      <div style={{ fontSize: 13, fontWeight: 500 }}>
+                        {m.plan_name || <span style={{ color: "var(--text3)" }}>No Plan</span>}
+                      </div>
+                      <div style={{ fontSize: 11, color: "var(--text3)", marginTop: 2, textTransform: "capitalize" }}>
+                        {m.plan_type}
+                      </div>
                       {m.diet_name && (
                         <div style={{ fontSize: 11, color: "var(--teal)", marginTop: 2 }}>
                           🥗 {m.diet_name}
                         </div>
                       )}
                     </td>
-                    <td style={{ color: "var(--text2)" }}>{m.plan_type}</td>
-                    <td style={{
-                      fontSize: 12,
-                      color: (m.days_until_expiry ?? 99) <= 0 ? "var(--danger)"
-                        : (m.days_until_expiry ?? 99) <= 3 ? "var(--danger)"
+
+                    {/* ── Renewal cell: date + days badge ── */}
+                    <td style={{ minWidth: 110, whiteSpace: "nowrap" }}>
+                      <div style={{
+                        fontSize: 13,
+                        color: (m.days_until_expiry ?? 99) <= 0 ? "var(--danger)"
                           : (m.days_until_expiry ?? 99) <= 7 ? "var(--warn)" : "var(--text2)"
-                    }}>
-                      {m.renewal_date || "—"}
+                      }}>
+                        {m.renewal_date || "—"}
+                      </div>
+                      <div style={{ marginTop: 4 }}>
+                        {m.days_until_expiry != null ? (() => {
+                          const d = m.days_until_expiry;
+                          if (d < 0)  return <span className="badge badge-red">{d}d</span>;
+                          if (d === 0) return <span className="badge badge-red">Today</span>;
+                          if (d <= 3) return <span className="badge badge-red">{d}d</span>;
+                          if (d <= 7) return <span className="badge badge-yellow">{d}d</span>;
+                          return <span className="badge badge-blue">{d}d</span>;
+                        })() : "—"}
+                      </div>
                     </td>
-                    <td>
-                      {m.days_until_expiry != null ? (() => {
-                        const d = m.days_until_expiry;
-                        if (d < 0) return <span className="badge badge-red">{d}d</span>;
-                        if (d === 0) return <span className="badge badge-red">Today</span>;
-                        if (d <= 3) return <span className="badge badge-red">{d}d</span>;
-                        if (d <= 7) return <span className="badge badge-yellow">{d}d</span>;
-                        return <span className="badge badge-blue">{d}d</span>;
-                      })() : "—"}
+
+                    {/* ── Financials cell: paid + balance ── */}
+                    <td style={{ textAlign: "right", minWidth: 110 }}>
+                      <div style={{ fontFamily: "var(--font-mono)", fontSize: 13, color: "var(--accent)" }}>
+                        ₹{Number(m.total_paid || 0).toLocaleString("en-IN")}
+                      </div>
+                      <div style={{ marginTop: 3 }}>
+                        {(m.balance_due || 0) > 0
+                          ? <span className="badge badge-yellow">
+                              ₹{Number(m.balance_due).toLocaleString("en-IN")} due
+                            </span>
+                          : <span style={{ fontSize: 11, color: "var(--text3)" }}>✓ clear</span>
+                        }
+                      </div>
                     </td>
-                    <td style={{ fontFamily: "var(--font-mono)", fontSize: 12, color: "var(--accent)" }}>
-                      ₹{Number(m.total_paid || 0).toLocaleString("en-IN")}
-                    </td>
-                    <td>
-                      {(m.balance_due || 0) > 0
-                        ? <span className="badge badge-yellow">
-                          ₹{Number(m.balance_due).toLocaleString("en-IN")}
-                        </span>
-                        : <span style={{ fontSize: 12, color: "var(--text3)" }}>—</span>
-                      }
-                    </td>
+
                     <td>{statusBadge(m.status)}</td>
-                    <td>
-                      <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
-                        <button className="btn btn-sm btn-secondary"
-                          onClick={() => { setSelected(m); setModal("edit"); }}>Edit</button>
-                        <button className="btn btn-sm"
-                          style={{ background: "rgba(45,255,195,.12)", color: "var(--teal)" }}
-                          disabled={m.days_until_expiry != null && m.days_until_expiry > 0}
-                          onClick={() => { setSelected(m); setModal("renew"); }}>Renew</button>
-                        <button className="btn btn-sm"
-                          style={{ background: "rgba(77,166,255,.12)", color: "var(--info)" }}
-                          onClick={() => { setSelected(m); setModal("payments"); }}>
-                          Payments{(m.balance_due || 0) > 0 ? " ⚠" : ""}
-                        </button>
-                        {m.status !== "cancelled" &&
-                          <button className="btn btn-sm btn-danger"
-                            onClick={() => cancelMember(m)}>Cancel</button>}
-                        <button className="btn btn-sm"
-                          style={{
-                            background: "rgba(255,91,91,.15)", color: "var(--danger)",
-                            border: "1px solid rgba(255,91,91,.3)"
-                          }}
-                          onClick={() => deleteMember(m)}>
-                          🗑 Delete
-                        </button>
+                    <td style={{ minWidth: 140 }}>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                        <div style={{ display: "flex", gap: 4 }}>
+                          <button className="btn btn-sm btn-secondary"
+                            onClick={() => setViewMember(m)}>View</button>
+                          <button className="btn btn-sm btn-secondary"
+                            onClick={() => { setSelected(m); setModal("edit"); }}>Edit</button>
+                          <button className="btn btn-sm"
+                            style={{ background: "rgba(45,255,195,.12)", color: "var(--teal)" }}
+                            disabled={m.days_until_expiry != null && m.days_until_expiry > 0}
+                            onClick={() => { setSelected(m); setModal("renew"); }}>Renew</button>
+                        </div>
+                        <div style={{ display: "flex", gap: 4 }}>
+                          <button className="btn btn-sm"
+                            style={{ background: "rgba(77,166,255,.12)", color: "var(--info)" }}
+                            onClick={() => { setSelected(m); setModal("payments"); }}>
+                            Payments{(m.balance_due || 0) > 0 ? " ⚠" : ""}
+                          </button>
+                          {m.status !== "cancelled" &&
+                            <button className="btn btn-sm btn-danger"
+                              onClick={() => cancelMember(m)}>Cancel</button>}
+                          <button className="btn btn-sm"
+                            style={{ background: "rgba(255,91,91,.15)", color: "var(--danger)", border: "1px solid rgba(255,91,91,.3)" }}
+                            onClick={() => deleteMember(m)}>🗑</button>
+                        </div>
                       </div>
                     </td>
 

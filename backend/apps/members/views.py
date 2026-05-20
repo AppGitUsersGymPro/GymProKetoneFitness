@@ -215,10 +215,19 @@ class MemberViewSet(viewsets.ModelViewSet):
         if params.get("personal_trainer") == "true":
             qs = qs.filter(personal_trainer=True)
 
-        # search
+        # search — name, phone, email, gym_member_id
         if params.get("search"):
             q  = params["search"]
-            qs = qs.filter(Q(name__icontains=q) | Q(phone__icontains=q) | Q(email__icontains=q))
+            qs = qs.filter(
+                Q(name__icontains=q) | Q(phone__icontains=q) |
+                Q(email__icontains=q) | Q(gym_member_id__icontains=q)
+            )
+
+        # DOB date range filter
+        if params.get("dob_from"):
+            qs = qs.filter(dob__gte=params["dob_from"])
+        if params.get("dob_to"):
+            qs = qs.filter(dob__lte=params["dob_to"])
 
         # expiring within N days (only makes sense for active members)
         expiring_days = params.get("expiring_days")
@@ -270,6 +279,8 @@ class MemberViewSet(viewsets.ModelViewSet):
             name=d["name"], phone=d["phone"],
             email=d.get("email",""), gender=d.get("gender",""),
             address=d.get("address",""), plan=plan, diet=diet,
+            dob=d.get("dob"),
+            gym_member_id=d.get("gym_member_id",""),
             join_date=join, renewal_date=renew,
             joining_date=d.get("joining_date") or join,
             status=d.get("status","active"), notes=d.get("notes",""),

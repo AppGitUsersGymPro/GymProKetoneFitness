@@ -103,18 +103,20 @@ class MemberAttendanceSerializer(serializers.ModelSerializer):
 
 
 class EnrollSerializer(serializers.Serializer):
-    name         = serializers.CharField()
-    phone        = serializers.CharField()
-    email        = serializers.EmailField(required=False, allow_blank=True)
-    gender       = serializers.CharField(required=False, allow_blank=True)
-    address      = serializers.CharField(required=False, allow_blank=True)
-    plan_id      = serializers.IntegerField(required=False, allow_null=True)
-    diet_id      = serializers.IntegerField(required=False, allow_null=True)
+    name          = serializers.CharField()
+    phone         = serializers.CharField()
+    email         = serializers.EmailField(required=False, allow_blank=True)
+    gender        = serializers.CharField(required=False, allow_blank=True)
+    address       = serializers.CharField(required=False, allow_blank=True)
+    dob           = serializers.DateField(required=False, allow_null=True)
+    gym_member_id = serializers.CharField(required=False, allow_blank=True, default="")
+    plan_id       = serializers.IntegerField(required=False, allow_null=True)
+    diet_id       = serializers.IntegerField(required=False, allow_null=True)
     join_date     = serializers.DateField(required=False)
     joining_date  = serializers.DateField(required=False, allow_null=True)
     renewal_date  = serializers.DateField(required=False, allow_null=True)
-    amount_paid  = serializers.DecimalField(max_digits=10, decimal_places=2,
-                       required=False, default=0)
+    amount_paid   = serializers.DecimalField(max_digits=10, decimal_places=2,
+                        required=False, default=0)
     notes             = serializers.CharField(required=False, allow_blank=True)
     status            = serializers.CharField(required=False, default="active")
     plan_type         = serializers.CharField(required=False, default="basic")
