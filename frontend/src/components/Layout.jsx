@@ -69,11 +69,11 @@ export default function Layout() {
             <img 
               src="/light-weight_fitness_logo.jpeg" 
               alt="Light Weight Fitness Logo" 
-              className="login-logo-img"
+              className="login-logo-img"s
               style={{ width: "50px", height: "50px", borderRadius: "50%", objectFit: "cover" }}
             />
           <div className="sidebar__logo-text">
-            <span className="sidebar__logo-name">GymPro</span>
+            <span className="sidebar__logo-name">KK Fitness Gym</span>
             <span className="sidebar__logo-sub">CRM</span>
           </div>
           <button
