@@ -263,7 +263,7 @@ export default function Settings() {
 
     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 12 }}>
       {[
-        { label: "Company Name", value: "Bermuda Tech" },
+        { label: "Company Name", value: "Appscore solutions" },
        
         { label: "Location", value: "India" },
         { label: "Product", value: "GymPro CRM" },
