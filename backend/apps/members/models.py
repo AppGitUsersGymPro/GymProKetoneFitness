@@ -39,8 +39,9 @@ class Member(models.Model):
     notes        = models.TextField(blank=True)
     created_at   = models.DateTimeField(auto_now_add=True)
     updated_at   = models.DateTimeField(auto_now=True)
-    personal_trainer = models.BooleanField(default=False)
-    joining_date   = models.DateField(default=timezone.localdate, null=True, blank=True)
+    personal_trainer       = models.BooleanField(default=False)
+    joining_date           = models.DateField(default=timezone.localdate, null=True, blank=True)
+    notifications_enabled  = models.BooleanField(default=True)
 
     class Meta:
         ordering = ["-created_at"]

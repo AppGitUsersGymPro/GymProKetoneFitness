@@ -66,8 +66,12 @@ def send_notification(member, trigger_type: str):
     Builds the message + template-parameter payload and inserts a Notification row with
     status='pending'. The post_save signal in signals.py routes delivery through the
     approved WhatsApp template (see TRIGGER_TEMPLATES).
-    Skips silently if the corresponding WhatsApp notification toggle is disabled.
+    Skips silently if the corresponding WhatsApp notification toggle is disabled,
+    or if the individual member has notifications turned off.
     """
+    if not getattr(member, "notifications_enabled", True):
+        return
+
     from apps.finances.gst_utils import is_notify_enabled
     setting_key = _TRIGGER_SETTING_KEY.get(trigger_type)
     if setting_key and not is_notify_enabled(setting_key):
@@ -157,8 +161,12 @@ def send_notification_admin(item, moneyleft, trigger_type: str):
 def send_pending_payment_reminder(member):
     """
     Sends a weekly pending balance reminder to a single member.
-    Skips silently if NOTIFY_PENDING_PAYMENT_MEMBER toggle is off.
+    Skips silently if NOTIFY_PENDING_PAYMENT_MEMBER toggle is off,
+    or if the individual member has notifications turned off.
     """
+    if not getattr(member, "notifications_enabled", True):
+        return
+
     from apps.finances.gst_utils import is_notify_enabled
     if not is_notify_enabled(_TRIGGER_SETTING_KEY["pending_payment_member"]):
         return

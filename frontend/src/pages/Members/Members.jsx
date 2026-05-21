@@ -1373,6 +1373,28 @@ export default function Members() {
     }
   };
 
+  const toggleNotifications = (m) => {
+    const newVal = !m.notifications_enabled;
+    setConfirmState({
+      title: newVal ? "Enable Notifications" : "Disable Notifications",
+      message: newVal
+        ? `Enable WhatsApp notifications for ${m.name}?`
+        : `Disable WhatsApp notifications for ${m.name}? They will not receive any WhatsApp messages.`,
+      confirmText: newVal ? "Enable" : "Disable",
+      onConfirm: async () => {
+        setConfirmState(null);
+        setMembers(prev => prev.map(x => x.id === m.id ? { ...x, notifications_enabled: newVal } : x));
+        try {
+          await api.patch(`/members/list/${m.id}/`, { notifications_enabled: newVal });
+        } catch {
+          setMembers(prev => prev.map(x => x.id === m.id ? { ...x, notifications_enabled: !newVal } : x));
+          toast.error("Failed to update notification setting.");
+        }
+      },
+      onCancel: () => setConfirmState(null),
+    });
+  };
+
   const cancelMember = (m) => {
     setConfirmState({
       title: "Cancel Membership",
@@ -1671,7 +1693,21 @@ export default function Members() {
                       </div>
                     </td>
 
-                    <td>{statusBadge(m.status)}</td>
+                    <td>
+                      {statusBadge(m.status)}
+                      <button
+                        title={m.notifications_enabled !== false ? "Notifications ON — click to disable" : "Notifications OFF — click to enable"}
+                        onClick={() => toggleNotifications(m)}
+                        style={{
+                          display: "block", marginTop: 6,
+                          background: "none", border: "none", cursor: "pointer",
+                          fontSize: 15, lineHeight: 1, padding: 0,
+                          opacity: m.notifications_enabled !== false ? 1 : 0.4,
+                        }}
+                      >
+                        {m.notifications_enabled !== false ? "🔔" : "🔕"}
+                      </button>
+                    </td>
                     <td style={{ minWidth: 140 }}>
                       <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
                         <div style={{ display: "flex", gap: 4 }}>

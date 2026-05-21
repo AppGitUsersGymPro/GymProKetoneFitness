@@ -108,8 +108,7 @@ def start():
     # Weekly Sunday 10 AM: remind members with pending balance + send admin summary
     scheduler.add_job(
         send_weekly_pending_payment_reminders,
-        # trigger="cron", day_of_week="sun", hour=10, minute=0,
-        trigger = "cron",hour=9,minute=27,
+        trigger="cron", day_of_week="sun", hour=10, minute=0,
         id="send_weekly_pending_payment_reminders", replace_existing=True,
     )
 
