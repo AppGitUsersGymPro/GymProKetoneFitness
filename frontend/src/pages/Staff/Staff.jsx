@@ -150,7 +150,7 @@ function ShiftModal({ shift, onClose, onSave }) {
           <div className="grid-2">
             <div className="form-group">
               <label className="form-label">Late Grace (mins)</label>
-              <input className="form-input" type="number" min={0} value={form.late_grace_minutes}
+              <input className="form-input" type="number" onWheel={e => e.target.blur()} min={0} value={form.late_grace_minutes}
                 onChange={e => set("late_grace_minutes", +e.target.value)} />
               <span style={{ fontSize: 11, color: "var(--text3)", marginTop: 3 }}>
                 Check-in within this window = on time
@@ -158,7 +158,7 @@ function ShiftModal({ shift, onClose, onSave }) {
             </div>
             <div className="form-group">
               <label className="form-label">OT Threshold (mins)</label>
-              <input className="form-input" type="number" min={0} value={form.overtime_threshold_minutes}
+              <input className="form-input" type="number" onWheel={e => e.target.blur()} min={0} value={form.overtime_threshold_minutes}
                 onChange={e => set("overtime_threshold_minutes", +e.target.value)} />
               <span style={{ fontSize: 11, color: "var(--text3)", marginTop: 3 }}>
                 Check-out beyond this = overtime
@@ -788,13 +788,13 @@ function StaffModal({ staff, onClose, onSave }) {
             </div>
             <div className="form-group">
               <label className="form-label">Monthly Salary (₹)</label>
-              <input className="form-input" type="number" value={form.salary}
+              <input className="form-input" type="number" onWheel={e => e.target.blur()} value={form.salary}
                 onChange={e => set("salary", e.target.value)} />
             </div>
             {form.role === "trainer" && (
               <div className="form-group">
                 <label className="form-label">Personal Trainer Fee (₹)</label>
-                <input className="form-input" type="number" value={form.personal_trainer_amt}
+                <input className="form-input" type="number" onWheel={e => e.target.blur()} value={form.personal_trainer_amt}
                   onChange={e => set("personal_trainer_amt", e.target.value)}
                   placeholder="Fee charged when assigned as personal trainer" />
               </div>
