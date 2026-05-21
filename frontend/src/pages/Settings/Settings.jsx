@@ -253,7 +253,7 @@ export default function Settings() {
   {/* 🔽 Company Details Section */}
   <div>
     <div style={{ fontFamily: "var(--font-display)", fontSize: 16, fontWeight: 700, marginBottom: 16 }}>
-      Bermuda Tech
+      Appscore Solutions
     </div>
 
     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 12 }}>
@@ -262,8 +262,8 @@ export default function Settings() {
        
         { label: "Location", value: "India" },
         { label: "Product", value: "GymPro CRM" },
-        { label: "Support", value: "bermudatech03@gmail.com" },
-        { label: "Website", value: "bermudatech.com" },
+        { label: "Support", value: "info@techalandsolutions.com" },
+        { label: "Website", value: "appscoresolutions.com techalandsolutions.com" },
       ].map(({ label, value }) => (
         <div key={label} style={{ background: "var(--surface2)", borderRadius: 8, padding: "12px 16px" }}>
           <div style={{
@@ -281,7 +281,8 @@ export default function Settings() {
             fontSize: 13,
             fontWeight: 600,
             color: "var(--text1)",
-            fontFamily: "var(--font-mono)"
+            fontFamily: "var(--font-mono)",
+            wordBreak: "break-all",
           }}>
             {value}
           </div>
