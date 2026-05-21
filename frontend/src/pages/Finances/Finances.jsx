@@ -65,7 +65,7 @@ function EntryModal({ type, onClose, onSave }) {
             </div>
             <div className="form-group">
               <label className="form-label">Amount (₹) *</label>
-              <input className="form-input" type="number" required
+              <input className="form-input" type="number" onWheel={e => e.target.blur()} required
                 value={form.amount} onChange={e => set("amount", e.target.value)}
                 placeholder="0" />
             </div>
@@ -235,12 +235,12 @@ function ToBuyModal({ item, onClose, onSave }) {
           <div className="grid-2">
             <div className="form-group">
               <label className="form-label">Quantity</label>
-              <input className="form-input" type="number" min="1" value={form.quantity}
+              <input className="form-input" type="number" onWheel={e => e.target.blur()} min="1" value={form.quantity}
                 onChange={e => set("quantity", e.target.value)} />
             </div>
             <div className="form-group">
               <label className="form-label">Price (₹)</label>
-              <input className="form-input" type="number" value={form.price}
+              <input className="form-input" type="number" onWheel={e => e.target.blur()} value={form.price}
                 onChange={e => set("price", e.target.value)} placeholder="Optional" />
             </div>
             <div className="form-group">

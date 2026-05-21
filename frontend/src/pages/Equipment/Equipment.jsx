@@ -35,7 +35,7 @@ function EqModal({ eq, onClose, onSave }) {
             <div className="form-group"><label className="form-label">Brand</label>
               <input className="form-input" value={form.brand} onChange={e=>set("brand",e.target.value)} /></div>
             <div className="form-group"><label className="form-label">Quantity</label>
-              <input className="form-input" type="number" min={1} value={form.quantity} onChange={e=>set("quantity",e.target.value)} /></div>
+              <input className="form-input" type="number" onWheel={e => e.target.blur()} min={1} value={form.quantity} onChange={e=>set("quantity",e.target.value)} /></div>
             <div className="form-group"><label className="form-label">Condition</label>
               <select className="form-input" value={form.condition} onChange={e=>set("condition",e.target.value)}>
                 {Object.keys(CONDITIONS).map(c=><option key={c} value={c}>{c.replace("_"," ")}</option>)}
@@ -45,7 +45,7 @@ function EqModal({ eq, onClose, onSave }) {
             <div className="form-group"><label className="form-label">Purchase Date</label>
               <input className="form-input" type="date" value={form.purchase_date||""} onChange={e=>set("purchase_date",e.target.value)} /></div>
             <div className="form-group"><label className="form-label">Purchase Price (₹)</label>
-              <input className="form-input" type="number" value={form.purchase_price||""} onChange={e=>set("purchase_price",e.target.value)} /></div>
+              <input className="form-input" type="number" onWheel={e => e.target.blur()} value={form.purchase_price||""} onChange={e=>set("purchase_price",e.target.value)} /></div>
             <div className="form-group"><label className="form-label">Next Service Date</label>
               <input className="form-input" type="date" value={form.next_service||""} onChange={e=>set("next_service",e.target.value)} /></div>
           </div>

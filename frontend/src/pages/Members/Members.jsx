@@ -218,7 +218,7 @@ function MemberModal({ member, plans, dietPlans: initialDietPlans, onClose, onSa
             </div>
             <div className="form-group">
               <label className="form-label">Age</label>
-              <input className="form-input" type="number" min="1" max="120" value={form.age || ""}
+              <input className="form-input" type="number" onWheel={e => e.target.blur()} min="1" max="120" value={form.age || ""}
                 onChange={e => set("age", e.target.value)} />
             </div>
             <div className="form-group">
@@ -345,7 +345,7 @@ function MemberModal({ member, plans, dietPlans: initialDietPlans, onClose, onSa
                   <label className="form-label">Plan Cost After Discount (₹)</label>
                   <input
                     className="form-input"
-                    type="number"
+                    type="number" onWheel={e => e.target.blur()}
                     min="0"
                     max={planBasePrice}
                     step="0.01"
@@ -402,7 +402,7 @@ function MemberModal({ member, plans, dietPlans: initialDietPlans, onClose, onSa
 
                 <div className="form-group">
                   <label className="form-label">Amount Paid Now (₹)</label>
-                  <input className="form-input" type="number" min="0" value={form.amount_paid || ""}
+                  <input className="form-input" type="number" onWheel={e => e.target.blur()} min="0" value={form.amount_paid || ""}
                     onChange={e => set("amount_paid", e.target.value)} placeholder="0" />
                 </div>
                 {(() => {
@@ -653,7 +653,7 @@ function RenewModal({ member, plans, dietPlans: initialDietPlans = [], onClose, 
               <label className="form-label">Plan Cost After Discount (₹)</label>
               <input
                 className="form-input"
-                type="number"
+                type="number" onWheel={e => e.target.blur()}
                 min="0"
                 max={planBase}
                 step="0.01"
@@ -713,7 +713,7 @@ function RenewModal({ member, plans, dietPlans: initialDietPlans = [], onClose, 
             </div>
             <div className="form-group">
               <label className="form-label">Amount Collected (₹) *</label>
-              <input className="form-input" type="number" min="0" value={amount}
+              <input className="form-input" type="number" onWheel={e => e.target.blur()} min="0" value={amount}
                 onChange={e => { setUserEdited(true); setAmount(e.target.value); }} required placeholder="1500" />
             </div>
           </div>
@@ -893,7 +893,7 @@ function PaymentHistoryModal({ member, onClose, onRefresh, onBill, gymInfo = {} 
                 Valid: {latestBal.valid_from} → {latestBal.valid_to}
               </div>
             </div>
-            <input className="form-input" type="number" min="1" max={latestBal.balance}
+            <input className="form-input" type="number" onWheel={e => e.target.blur()} min="1" max={latestBal.balance}
               value={balAmt} onChange={e => setBalAmt(e.target.value)}
               placeholder={`Max ₹${latestBal.balance}`} style={{ maxWidth: 140 }} />
             <select className="form-input" value={balMode} onChange={e => setBalMode(e.target.value)} style={{ maxWidth: 110 }}>
@@ -1213,7 +1213,7 @@ function DietUpgradeModal({ memberId, memberRenewalDate, onClose, onBill }) {
           <div className="grid-2">
             <div className="form-group">
               <label className="form-label">Amount to Collect (₹)</label>
-              <input className="form-input" type="number" min="0" step="0.01" value={amount}
+              <input className="form-input" type="number" onWheel={e => e.target.blur()} min="0" step="0.01" value={amount}
                 onChange={e => setAmount(e.target.value)} placeholder="0" />
             </div>
             <div className="form-group">
@@ -1529,7 +1529,7 @@ export default function Members() {
             <span style={{ fontSize: 12, color: "var(--text3)", whiteSpace: "nowrap" }}>Expiring in</span>
             <input
               className="form-input"
-              type="number" min="1" max="365"
+              type="number" onWheel={e => e.target.blur()} min="1" max="365"
               placeholder="days"
               value={expiringDays}
               onChange={e => { setExpiringDays(e.target.value); setPage(1); }}

@@ -309,7 +309,7 @@ function PTRenewalModal({ assignment, onClose, onSave }) {
                 <label className="form-label">Amount to Collect (₹)</label>
                 <input
                   className="form-input"
-                  type="number"
+                  type="number" onWheel={e => e.target.blur()}
                   min="0"
                   step="0.01"
                   value={amountPaid}
@@ -886,7 +886,7 @@ function AssignmentModal({ assignment, allMembers, trainers, plans, onClose, onS
                   <div style={{ display: "flex", gap: 8 }}>
                     <div style={{ flex: 1 }}>
                       <label style={{ fontSize: 11, color: "var(--text3)", display: "block", marginBottom: 4 }}>Amount (₹)</label>
-                      <input className="form-input" type="number" min="0" max={feesToCollect}
+                      <input className="form-input" type="number" onWheel={e => e.target.blur()} min="0" max={feesToCollect}
                         value={ptAmountToCollect} onChange={e => setPtAmountToCollect(e.target.value)}
                         placeholder="0 to collect later" />
                     </div>
@@ -964,7 +964,7 @@ function PTBalanceModal({ assignment, onClose, onSave }) {
               <label className="form-label">Amount (₹)</label>
               <input
                 className="form-input"
-                type="number"
+                type="number" onWheel={e => e.target.blur()}
                 min="0.01"
                 max={balance}
                 step="0.01"

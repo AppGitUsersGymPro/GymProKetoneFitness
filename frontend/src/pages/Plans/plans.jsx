@@ -56,7 +56,7 @@ function PlanModal({ plan, onClose, onSave }) {
               <label className="form-label">Duration (days) *</label>
               <input
                 className="form-input"
-                type="number"
+                type="number" onWheel={e => e.target.blur()}
                 min={1}
                 value={form.duration_days}
                 onChange={e => set("duration_days", e.target.value)}
@@ -68,7 +68,7 @@ function PlanModal({ plan, onClose, onSave }) {
               <label className="form-label">Price (₹) *</label>
               <input
                 className="form-input"
-                type="number"
+                type="number" onWheel={e => e.target.blur()}
                 min={0}
                 step="0.01"
                 value={form.price}

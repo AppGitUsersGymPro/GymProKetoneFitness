@@ -108,7 +108,7 @@ const CreatePlanModal = ({ onClose, onSave, plan }) => {
                         />
                         <input
                             className="form-input"
-                            type="number"
+                            type="number" onWheel={e => e.target.blur()}
                             placeholder="100"
                             min="0"
                             value={item.quantity}
@@ -129,7 +129,7 @@ const CreatePlanModal = ({ onClose, onSave, plan }) => {
                         />
                         <input
                             className="form-input"
-                            type="number"
+                            type="number" onWheel={e => e.target.blur()}
                             placeholder="kcal"
                             min="0"
                             value={item.calories}
