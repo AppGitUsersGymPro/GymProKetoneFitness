@@ -5,14 +5,16 @@ import toast from "react-hot-toast";
 import "./Settings.css";
 
 const GYM_FIELDS = [
-  { key: "GYM_NAME",           label: "Gym Name",              type: "text" },
-  { key: "GYM_ADDRESS",        label: "Address",               type: "text" },
-  { key: "GYM_PHONE",          label: "Phone",                 type: "text" },
-  { key: "GYM_EMAIL",          label: "Email",                 type: "email" },
-  { key: "GYM_GSTIN",          label: "GSTIN",                 type: "text" },
-  { key: "GST_RATE",           label: "GST Rate (%)",          type: "number" },
-  { key: "PT_PAYABLE_PERCENT", label: "PT Payable to Trainer (%)", type: "number" },
-  { key: "DIET_PLAN_AMOUNT",  label: "Diet Plan Amount (₹)",     type: "number" },
+  { key: "GYM_NAME",               label: "Gym Name",                     type: "text" },
+  { key: "GYM_ADDRESS",            label: "Address",                      type: "text" },
+  { key: "GYM_PHONE",              label: "Phone",                        type: "text" },
+  { key: "GYM_EMAIL",              label: "Email",                        type: "email" },
+  { key: "GYM_GSTIN",              label: "GSTIN",                        type: "text" },
+  { key: "GST_RATE",               label: "GST Rate (%)",                 type: "number" },
+  { key: "PT_PAYABLE_PERCENT",     label: "PT Payable to Trainer (%)",    type: "number" },
+  { key: "DIET_PLAN_AMOUNT",       label: "Diet Plan Amount (₹)",         type: "number" },
+  { key: "ADMIN_WHATSAPP_NUMBER",  label: "Admin WhatsApp Number",        type: "text",
+    hint: "All admin notifications (daily buy reminder, pending payment summary, etc.) are sent to this number" },
 ];
 
 const NOTIFY_TOGGLES = [
@@ -26,7 +28,9 @@ const NOTIFY_TOGGLES = [
   { key: "NOTIFY_ENQUIRY_FOLLOWUP", label: "Enquiry Follow-up",          desc: "Sent on scheduled follow-up dates to enquiries" },
   { key: "NOTIFY_NEW_PLAN",        label: "New Membership / Offer Plan", desc: "Sent to all active members and enquiries when a new plan is added" },
   { key: "NOTIFY_PT_RENEWAL",      label: "PT Renewal & PT Balance",     desc: "Sends the PT receipt on personal training renewal or balance payment" },
-  { key: "NOTIFY_DAILY_NOTICE",    label: "Daily Buy Reminder (Admin)",  desc: "Sends admin a daily WhatsApp about pending items to buy" },
+  { key: "NOTIFY_DAILY_NOTICE",             label: "Daily Buy Reminder (Admin)",              desc: "Sends admin a daily WhatsApp about pending items to buy" },
+  { key: "NOTIFY_PENDING_PAYMENT_MEMBER",  label: "Weekly Pending Payment (Members)",        desc: "Every Sunday 10 AM — reminds members with an outstanding balance to pay" },
+  { key: "NOTIFY_PENDING_PAYMENT_ADMIN",   label: "Weekly Pending Payment Summary (Admin)",  desc: "Every Sunday 10 AM — sends admin the full list of members with pending balance" },
 ];
 
 export default function Settings() {
@@ -98,7 +102,7 @@ export default function Settings() {
           </div>
           <form onSubmit={saveGymSettings}>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))", gap: 14, marginBottom: 18 }}>
-              {GYM_FIELDS.map(({ key, label, type }) => (
+              {GYM_FIELDS.map(({ key, label, type, hint }) => (
                 <div className="form-group" key={key}>
                   <label className="form-label">{label}</label>
                   <input
@@ -109,6 +113,7 @@ export default function Settings() {
                     value={gymSettings[key] ?? ""}
                     onChange={e => setGymSettings(p => ({ ...p, [key]: e.target.value }))}
                   />
+                  {hint && <div style={{ fontSize: 11, color: "var(--text3)", marginTop: 4 }}>{hint}</div>}
                 </div>
               ))}
             </div>

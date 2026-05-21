@@ -202,6 +202,27 @@ def send_diet_notifications():
             )
 
 
+def send_weekly_pending_payment_reminders():
+    """
+    Runs every Sunday at 10:00 AM.
+    - Sends each active/paused member with a balance due a reminder to pay.
+    - Sends admin a summary list of all pending-balance members.
+    """
+    from apps.notifications.utils import send_pending_payment_reminder, send_pending_payment_admin_summary
+    from apps.members.models import Member
+
+    members_with_balance = [
+        m for m in Member.objects.filter(status__in=["active", "paused"])
+        if m.balance_due() > 0
+    ]
+
+    for member in members_with_balance:
+        send_pending_payment_reminder(member)
+
+    if members_with_balance:
+        send_pending_payment_admin_summary(members_with_balance)
+
+
 def retry_failed_notifications():
     import time
     from apps.notifications.models import Notification

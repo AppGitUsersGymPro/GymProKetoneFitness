@@ -53,6 +53,18 @@ def calc_gst_from_total(total_amount):
     return base, gst_amt, total, float(rate)
 
 
+def get_admin_whatsapp_number():
+    """
+    Returns the admin WhatsApp number from GymSetting (DB).
+    Falls back to the env/settings value so nothing breaks if the DB row is empty.
+    """
+    from django.conf import settings as _s
+    db_val = get_setting("ADMIN_WHATSAPP_NUMBER", "")
+    if db_val:
+        return db_val
+    return getattr(_s, "ADMIN_WHATSAPP_NUMBER", "")
+
+
 def get_gym_info():
     """Return gym details from GymSetting DB table."""
     return {

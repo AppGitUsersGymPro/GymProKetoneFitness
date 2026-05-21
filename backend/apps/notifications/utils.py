@@ -1,7 +1,7 @@
 import logging
 from django.utils import timezone
 
-from gym_crm import settings
+from apps.finances.gst_utils import get_admin_whatsapp_number
 from .models import Notification
 
 logger = logging.getLogger(__name__)
@@ -20,6 +20,8 @@ TEMPLATES = {
     "staff_absent_admin":   "Hi Admin, {staff_name} ({role}) has not checked in for their shift on {date}. Please follow up.",
     "new_plan":             "Hi {name}, we just launched a new membership plan - {plan_name} for {duration} days at Rs.{price}. Visit us or call to enroll today!",
     "diet_reminder":        "Hi {name}, diet reminder! Time to have {quantity}{unit} of {food} ({calories} cal). Stay consistent with your diet plan!",
+    "pending_payment_member": "Hi {name}, you have a pending balance of Rs.{balance} for your gym membership. Please clear the payment at the earliest to ensure uninterrupted access.",
+    "pending_payment_admin":  "Hi Admin, {count} member(s) have a pending balance totalling Rs.{total}. Details:\n{details}",
 }
 
 
@@ -34,17 +36,21 @@ TRIGGER_TEMPLATES = {
     "new_plan":         "new_plan_launch",
     "diet_reminder":    "diet_reminder",
     "daily_notice":     "stock_alert_admin",
-    "staff_absent_self":  "staff_absent_self",
-    "staff_absent_admin": "staff_absent_admin",
+    "staff_absent_self":       "staff_absent_self",
+    "staff_absent_admin":      "staff_absent_admin",
+    "pending_payment_member":  "pending_payment_reminder",
+    "pending_payment_admin":   "pending_payment_admin_summary",
 }
 
 
 _TRIGGER_SETTING_KEY = {
-    "enrollment":      "NOTIFY_ENROLLMENT",
-    "renewal_confirm": "NOTIFY_RENEWAL_CONFIRM",
-    "renewal_remind":  "NOTIFY_RENEWAL_REMIND",
-    "expiry":          "NOTIFY_EXPIRY",
-    "absent":          "NOTIFY_ABSENT",
+    "enrollment":             "NOTIFY_ENROLLMENT",
+    "renewal_confirm":        "NOTIFY_RENEWAL_CONFIRM",
+    "renewal_remind":         "NOTIFY_RENEWAL_REMIND",
+    "expiry":                 "NOTIFY_EXPIRY",
+    "absent":                 "NOTIFY_ABSENT",
+    "pending_payment_member": "NOTIFY_PENDING_PAYMENT_MEMBER",
+    "pending_payment_admin":  "NOTIFY_PENDING_PAYMENT_ADMIN",
 }
 
 
@@ -121,7 +127,7 @@ def send_staff_notification(staff, trigger_type: str):
     )
     Notification.objects.create(
         recipient_name="Admin",
-        recipient_phone=_normalize_phone(settings.ADMIN_WHATSAPP_NUMBER),
+        recipient_phone=_normalize_phone(get_admin_whatsapp_number()),
         channel="whatsapp",
         trigger_type=trigger_type,
         message=body_admin,
@@ -138,11 +144,69 @@ def send_notification_admin(item, moneyleft, trigger_type: str):
 
     Notification.objects.create(
         recipient_name=item.item_name,
-        recipient_phone=_normalize_phone(settings.ADMIN_WHATSAPP_NUMBER),
+        recipient_phone=_normalize_phone(get_admin_whatsapp_number()),
         channel="whatsapp",
         trigger_type=trigger_type,
         message=body,
         template_name=TRIGGER_TEMPLATES.get(trigger_type, ""),
         template_params=[item.item_name, str(moneyleft), date_str],
         status="pending",
+    )
+
+
+def send_pending_payment_reminder(member):
+    """
+    Sends a weekly pending balance reminder to a single member.
+    Skips silently if NOTIFY_PENDING_PAYMENT_MEMBER toggle is off.
+    """
+    from apps.finances.gst_utils import is_notify_enabled
+    if not is_notify_enabled(_TRIGGER_SETTING_KEY["pending_payment_member"]):
+        return
+
+    balance = f"{member.balance_due():.2f}"
+    body    = TEMPLATES["pending_payment_member"].format(name=member.name, balance=balance)
+
+    Notification.objects.create(
+        recipient_name  = member.name,
+        recipient_phone = _normalize_phone(member.phone),
+        channel         = "whatsapp",
+        trigger_type    = "pending_payment_member",
+        message         = body,
+        template_name   = TRIGGER_TEMPLATES["pending_payment_member"],
+        template_params = [member.name, balance],
+        status          = "pending",
+    )
+
+
+def send_pending_payment_admin_summary(members_with_balance):
+    """
+    Sends weekly pending balance summary to admin.
+    Skips silently if NOTIFY_PENDING_PAYMENT_ADMIN toggle is off or admin number not set.
+    """
+    from apps.finances.gst_utils import is_notify_enabled
+    if not is_notify_enabled(_TRIGGER_SETTING_KEY["pending_payment_admin"]):
+        return
+
+    admin_phone = _normalize_phone(get_admin_whatsapp_number())
+    if not admin_phone:
+        logger.warning("send_pending_payment_admin_summary: ADMIN_WHATSAPP_NUMBER not set — skipped")
+        return
+
+    count   = len(members_with_balance)
+    total   = f"{sum(m.balance_due() for m in members_with_balance):.2f}"
+    lines   = [f"- {m.name} ({m.phone}): Rs.{m.balance_due():.2f}" for m in members_with_balance[:30]]
+    if count > 30:
+        lines.append(f"...and {count - 30} more.")
+    details = "\n".join(lines)
+    body    = TEMPLATES["pending_payment_admin"].format(count=count, total=total, details=details)
+
+    Notification.objects.create(
+        recipient_name  = "Admin",
+        recipient_phone = admin_phone,
+        channel         = "whatsapp",
+        trigger_type    = "pending_payment_admin",
+        message         = body,
+        template_name   = TRIGGER_TEMPLATES["pending_payment_admin"],
+        template_params = [str(count), total],
+        status          = "pending",
     )

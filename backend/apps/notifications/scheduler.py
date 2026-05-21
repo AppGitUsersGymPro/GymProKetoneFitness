@@ -40,6 +40,7 @@ def start():
         retry_failed_notifications,
         send_enquiry_followups,
         run_auto_mark_absent,
+        send_weekly_pending_payment_reminders,
     )
 
     scheduler.add_job(
@@ -102,6 +103,14 @@ def start():
         run_auto_mark_absent,
         trigger="cron", minute=0,
         id="run_auto_mark_absent", replace_existing=True,
+    )
+
+    # Weekly Sunday 10 AM: remind members with pending balance + send admin summary
+    scheduler.add_job(
+        send_weekly_pending_payment_reminders,
+        # trigger="cron", day_of_week="sun", hour=10, minute=0,
+        trigger = "cron",hour=9,minute=27,
+        id="send_weekly_pending_payment_reminders", replace_existing=True,
     )
 
     scheduler.start()
