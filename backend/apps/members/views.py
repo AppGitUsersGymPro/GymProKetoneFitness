@@ -876,7 +876,7 @@ class MemberTrainerAssignmentViewSet(viewsets.ModelViewSet):
 
         if latest_payment and latest_payment.plan:
             base, gst_amt, total, rate = _calc_gst(
-                latest_payment.plan.price + trainer_fee + diet_amt_current
+                latest_payment.plan.price - latest_payment.discount_amount + trainer_fee + diet_amt_current
             )
             latest_payment.plan_price       = base
             latest_payment.diet_plan_amount = diet_amt_current

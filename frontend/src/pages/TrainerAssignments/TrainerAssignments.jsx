@@ -423,7 +423,13 @@ function AssignmentModal({ assignment, allMembers, trainers, plans, onClose, onS
   const memberPlanId      = pendingMember ? pendingMember.plan
                           : (pendingRenewal?.plan_id || newPlanId || selectedMemberObj?.plan);
   const memberPlan        = plans.find(p => String(p.id) === String(memberPlanId));
-  const planWithGst       = parseFloat(memberPlan?.price_with_gst ?? memberPlan?.price ?? 0);
+  // Use discounted plan price when coming from pendingMember or pendingRenewal enrollment flows
+  const pendingDiscountAmt = parseFloat(pendingMember?.discount_amount || pendingRenewal?.discount_amount || 0);
+  const planBasePrice      = parseFloat(memberPlan?.price ?? 0);
+  const planBaseAfterDiscount = Math.max(0, planBasePrice - pendingDiscountAmt);
+  const planWithGst        = pendingDiscountAmt > 0
+    ? parseFloat((planBaseAfterDiscount * (1 + gymGstRate / 100)).toFixed(2))
+    : parseFloat(memberPlan?.price_with_gst ?? memberPlan?.price ?? 0);
   const ptFee             = parseFloat(selectedTrainer?.personal_trainer_amt ?? 0);
 
   // Prorate PT fee by actual days that will be assigned (same logic as PT renewal)
@@ -527,6 +533,7 @@ function AssignmentModal({ assignment, allMembers, trainers, plans, onClose, onS
           mode_of_payment: pendingMember.mode_of_payment || "cash",
           renewal_date:    pendingMember.renewal_date || undefined,
           status:          pendingMember.status || "active",
+          discount_amount: pendingMember.discount_amount || 0,
         });
         const createdMemberId = mRes.data.id;
 
@@ -568,6 +575,7 @@ function AssignmentModal({ assignment, allMembers, trainers, plans, onClose, onS
           amount_paid:     pendingRenewal.amount_paid,
           notes:           pendingRenewal.notes || "",
           mode_of_payment: pendingRenewal.mode_of_payment || "cash",
+          discount_amount: pendingRenewal.discount_amount || 0,
         });
 
         // Step 2: Assign trainer (include PT fee so backend handles it in one transaction)
@@ -833,10 +841,27 @@ function AssignmentModal({ assignment, allMembers, trainers, plans, onClose, onS
           {form.trainer && planWithGst > 0 && (
             <div style={{ background: "var(--card-bg)", border: "1px solid var(--border)", borderRadius: 8, padding: "12px 14px", fontSize: 13 }}>
               <div style={{ fontWeight: 600, marginBottom: 8, color: "var(--text1)" }}>Amount Breakdown</div>
-              <div style={{ display: "flex", justifyContent: "space-between", color: "var(--text2)", marginBottom: 4 }}>
-                <span>Plan (incl. GST)</span>
-                <span style={{ fontFamily: "var(--font-mono)" }}>₹{fmtD(planWithGst)}</span>
-              </div>
+              {pendingDiscountAmt > 0 ? (
+                <>
+                  <div style={{ display: "flex", justifyContent: "space-between", color: "var(--text2)", marginBottom: 4 }}>
+                    <span>Plan Price (Original)</span>
+                    <span style={{ fontFamily: "var(--font-mono)" }}>₹{fmtD(parseFloat((planBasePrice * (1 + gymGstRate / 100)).toFixed(2)))}</span>
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", color: "var(--accent)", marginBottom: 4 }}>
+                    <span>Discount</span>
+                    <span style={{ fontFamily: "var(--font-mono)" }}>- ₹{fmtD(pendingDiscountAmt)}</span>
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", color: "var(--text1)", fontWeight: 700, marginBottom: 4, borderTop: "1px dashed var(--border)", paddingTop: 6 }}>
+                    <span>Plan after Discount (incl. GST)</span>
+                    <span style={{ fontFamily: "var(--font-mono)" }}>₹{fmtD(planWithGst)}</span>
+                  </div>
+                </>
+              ) : (
+                <div style={{ display: "flex", justifyContent: "space-between", color: "var(--text2)", marginBottom: 4 }}>
+                  <span>Plan (incl. GST)</span>
+                  <span style={{ fontFamily: "var(--font-mono)" }}>₹{fmtD(planWithGst)}</span>
+                </div>
+              )}
               {ptFee > 0 && (
                 <>
                   <div style={{ display: "flex", justifyContent: "space-between", color: "var(--text2)", marginBottom: 4 }}>

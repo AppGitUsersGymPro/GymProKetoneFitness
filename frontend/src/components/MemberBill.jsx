@@ -356,6 +356,7 @@ export default function MemberBill({ bill, onClose }) {
       <div class="section-label">Invoice Breakdown</div>
       ${!bill.is_diet_upgrade && !bill.is_pt_upgrade && fmtF(bill.membership_fee ?? bill.plan_price) > 0 ? `<div class="b-row"><span class="lbl">Membership Fee (Base)</span><span class="val">₹${fmt(bill.membership_fee ?? bill.plan_price)}</span></div>` : ""}
       ${fmtF(bill.discount_amount) > 0 ? `<div class="b-row" style="color:#1a7a00"><span class="lbl">Discount</span><span class="val">- ₹${fmt(bill.discount_amount)}</span></div>` : ""}
+      ${fmtF(bill.discount_amount) > 0 ? `<div class="b-row" style="font-weight:700;color:#333;border-top:1px dashed #ddd;padding-top:8px"><span class="lbl">Plan Price after Discount</span><span class="val">₹${fmt(fmtF(bill.membership_fee ?? bill.plan_price) - fmtF(bill.discount_amount))}</span></div>` : ""}
       ${fmtF(bill.pt_fee) > 0 ? `<div class="b-row"><span class="lbl">Personal Trainer Fee</span><span class="val">₹${fmt(bill.pt_fee)}</span></div>` : ""}
       ${fmtF(bill.diet_plan_amount) > 0 ? `<div class="b-row"><span class="lbl">Diet Plan</span><span class="val">₹${fmt(bill.diet_plan_amount)}</span></div>` : ""}
       ${hasGST ? `<div class="b-row gst"><span class="lbl">GST @ ${bill.gst_rate}% (CGST ${bill.gst_rate / 2}% + SGST ${bill.gst_rate / 2}%)</span><span class="val">₹${fmt(bill.gst_amount)}</span></div>` : ""}
@@ -618,6 +619,12 @@ export default function MemberBill({ bill, onClose }) {
                   <div className="bill-line bill-line--discount">
                     <span>Discount</span>
                     <span>- ₹{fmt(bill.discount_amount)}</span>
+                  </div>
+                )}
+                {fmtF(bill.discount_amount) > 0 && (
+                  <div className="bill-line" style={{ fontWeight: 700, color: "var(--text1)", borderTop: "1px dashed var(--border)", paddingTop: 8 }}>
+                    <span>Plan Price after Discount</span>
+                    <span>₹{fmt(fmtF(bill.membership_fee ?? bill.plan_price) - fmtF(bill.discount_amount))}</span>
                   </div>
                 )}
                 {fmtF(bill.pt_fee) > 0 && (
