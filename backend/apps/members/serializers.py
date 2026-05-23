@@ -77,6 +77,7 @@ class MemberSerializer(serializers.ModelSerializer):
     total_paid         = serializers.SerializerMethodField()
     balance_due        = serializers.SerializerMethodField()
     member_id_display  = serializers.SerializerMethodField()
+    latest_discount_amount = serializers.SerializerMethodField()
 
     class Meta:
         model  = Member
@@ -88,6 +89,9 @@ class MemberSerializer(serializers.ModelSerializer):
     def get_member_id_display(self, obj): return obj.display_id()
     def get_plan_allows_trainer(self, obj):
         return obj.plan_type in ("standard", "premium") and obj.personal_trainer
+    def get_latest_discount_amount(self, obj):
+        p = obj.payments.order_by("-created_at").values_list("discount_amount", flat=True).first()
+        return float(p) if p is not None else 0.0
 
 
 class MemberAttendanceSerializer(serializers.ModelSerializer):

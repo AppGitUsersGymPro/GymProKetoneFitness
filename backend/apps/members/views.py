@@ -293,7 +293,7 @@ class MemberViewSet(viewsets.ModelViewSet):
 
         if plan:
             from apps.finances.gst_utils import get_diet_plan_amount as _get_diet_amt
-            diet_amt     = _get_diet_amt() if diet else Decimal("0")
+            diet_amt     = _get_diet_amt() if (diet or plan_type in ("premium", "dietonly-standard")) else Decimal("0")
             discount_amt = Decimal(str(d.get("discount_amount", 0)))
             base, gst_amt, total, rate = _calc_gst(plan.price + diet_amt - discount_amt)
             inv_no = _invoice_number(member.id, join)
@@ -382,7 +382,7 @@ class MemberViewSet(viewsets.ModelViewSet):
         member.renew()
 
         from apps.finances.gst_utils import get_diet_plan_amount as _get_diet_amt
-        diet_amt     = _get_diet_amt() if member.diet else Decimal("0")
+        diet_amt     = _get_diet_amt() if (member.diet or new_plan_type in ("premium", "dietonly-standard")) else Decimal("0")
         discount_amt = Decimal(str(s.validated_data.get("discount_amount", 0)))
         plan_base    = (member.plan.price if member.plan else amount_paid) + diet_amt - discount_amt
         base, gst_amt, total, rate = _calc_gst(plan_base)
@@ -486,9 +486,6 @@ class MemberViewSet(viewsets.ModelViewSet):
         """
         from apps.finances.gst_utils import get_diet_plan_amount as _get_diet_amt
         member = self.get_object()
-
-        if not member.diet:
-            return Response({"detail": "Assign a diet plan to the member first."}, status=400)
 
         latest_payment = member.payments.select_related("plan").order_by("-created_at").first()
         if not latest_payment:
@@ -871,8 +868,9 @@ class MemberTrainerAssignmentViewSet(viewsets.ModelViewSet):
         # Prorate PT and diet fees by actual days assigned (same logic as PT renewal)
         pt_days = (pt_end - pt_start).days
         trainer_fee = (trainer_fee_full / 30 * pt_days).quantize(Decimal("0.01"), ROUND_HALF_UP) if pt_days < 30 else trainer_fee_full
-        diet_full = _get_diet_amt() if member.diet else Decimal("0")
-        diet_amt_current = (diet_full / 30 * pt_days).quantize(Decimal("0.01"), ROUND_HALF_UP) if (member.diet and pt_days < 30) else diet_full
+        has_diet_fee = bool(member.diet) or member.plan_type in ("premium", "dietonly-standard")
+        diet_full = _get_diet_amt() if has_diet_fee else Decimal("0")
+        diet_amt_current = (diet_full / 30 * pt_days).quantize(Decimal("0.01"), ROUND_HALF_UP) if (has_diet_fee and pt_days < 30) else diet_full
 
         if latest_payment and latest_payment.plan:
             base, gst_amt, total, rate = _calc_gst(

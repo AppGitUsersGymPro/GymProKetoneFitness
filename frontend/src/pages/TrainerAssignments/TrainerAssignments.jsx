@@ -423,8 +423,13 @@ function AssignmentModal({ assignment, allMembers, trainers, plans, onClose, onS
   const memberPlanId      = pendingMember ? pendingMember.plan
                           : (pendingRenewal?.plan_id || newPlanId || selectedMemberObj?.plan);
   const memberPlan        = plans.find(p => String(p.id) === String(memberPlanId));
-  // Use discounted plan price when coming from pendingMember or pendingRenewal enrollment flows
-  const pendingDiscountAmt = parseFloat(pendingMember?.discount_amount || pendingRenewal?.discount_amount || 0);
+  // Use discounted plan price — from pendingMember/pendingRenewal flows or from member's latest payment (edit upgrade flow)
+  const pendingDiscountAmt = parseFloat(
+    pendingMember?.discount_amount ||
+    pendingRenewal?.discount_amount ||
+    selectedMemberObj?.latest_discount_amount ||
+    0
+  );
   const planBasePrice      = parseFloat(memberPlan?.price ?? 0);
   const planBaseAfterDiscount = Math.max(0, planBasePrice - pendingDiscountAmt);
   const planWithGst        = pendingDiscountAmt > 0
@@ -455,12 +460,13 @@ function AssignmentModal({ assignment, allMembers, trainers, plans, onClose, onS
   const ptFeeGst         = parseFloat((proratedPtFee * gymGstRate / 100).toFixed(2));
   const ptFeeWithGst     = proratedPtFee + ptFeeGst;
 
-  // Determine if the member being assigned has a diet plan
-  // For deferred renewal: only premium/dietonly-standard include diet
+  // Determine if the member being assigned includes a diet fee.
+  // For new enrollment / renewal: check plan_type (diet fee is collected regardless of chart assignment).
+  // For existing member: check whether a diet is already linked.
   const memberHasDiet = pendingMember
-    ? Boolean(pendingMember.diet)
+    ? (pendingMember.plan_type === "premium" || pendingMember.plan_type === "dietonly-standard")
     : pendingRenewal
-      ? (pendingRenewal.plan_type === "premium" || pendingRenewal.plan_type === "dietonly-standard") && Boolean(pendingRenewal.diet_id)
+      ? (pendingRenewal.plan_type === "premium" || pendingRenewal.plan_type === "dietonly-standard")
       : Boolean(selectedMemberObj?.diet_id);
   const proratedDietBaseAmt = memberHasDiet && ptDays < 30
     ? parseFloat((dietBaseAmt / 30 * ptDays).toFixed(2))
@@ -880,7 +886,7 @@ function AssignmentModal({ assignment, allMembers, trainers, plans, onClose, onS
               )}
               {dietWithGst > 0 && (
                 <div style={{ display: "flex", justifyContent: "space-between", color: "var(--teal)", marginBottom: 4 }}>
-                  <span>Diet Plan (incl. GST{ptDays < 30 ? `, ${ptDays} days` : ""})</span>
+                  <span>Diet Plan (incl. GST{ptDays < 30 ? `, ${ptDays} days` : ""}{(pendingMember || pendingRenewal) ? " — collected at enrollment" : ""})</span>
                   <span style={{ fontFamily: "var(--font-mono)" }}>₹{fmtD(dietWithGst)}</span>
                 </div>
               )}
@@ -901,9 +907,9 @@ function AssignmentModal({ assignment, allMembers, trainers, plans, onClose, onS
               {!isEdit && feesToCollect > 0 && (
                 <div style={{ marginTop: 12, borderTop: "1px solid var(--border)", paddingTop: 12 }}>
                   <div style={{ fontWeight: 600, marginBottom: 4, color: "var(--text1)" }}>
-                    Collect PT{!pendingRenewal && dietWithGst > 0 ? " + Diet" : ""} Fee Now
+                    Collect PT Fee Now{(pendingMember || pendingRenewal) && dietWithGst > 0 ? " (Diet collected at enrollment)" : ""}
                   </div>
-                  {!pendingRenewal && dietWithGst > 0 && (
+                  {!(pendingMember || pendingRenewal) && dietWithGst > 0 && (
                     <div style={{ fontSize: 11, color: "var(--text3)", marginBottom: 8 }}>
                       PT ₹{fmtD(ptFeeWithGst)} + Diet ₹{fmtD(dietWithGst)} = ₹{fmtD(feesToCollect)}
                     </div>
