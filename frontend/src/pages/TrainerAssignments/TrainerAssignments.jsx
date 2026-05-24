@@ -351,7 +351,7 @@ function PTRenewalModal({ assignment, onClose, onSave }) {
 }
 
 /* ─── Assignment Modal ─────────────────────────────────────────────────────── */
-function AssignmentModal({ assignment, allMembers, trainers, plans, onClose, onSave, newMemberId, newPlanId, pendingMember, pendingRenewal, renewMemberId }) {
+function AssignmentModal({ assignment, allMembers, trainers, plans, onClose, onSave, newMemberId, newPlanId, pendingMember, pendingRenewal, renewMemberId, prevType }) {
   const isEdit = !!assignment?.id;
 
   const eligibleMembers = allMembers.filter(m => m.plan_allows_trainer);
@@ -462,12 +462,18 @@ function AssignmentModal({ assignment, allMembers, trainers, plans, onClose, onS
 
   // Determine if the member being assigned includes a diet fee.
   // For new enrollment / renewal: check plan_type (diet fee is collected regardless of chart assignment).
-  // For existing member: check whether a diet is already linked.
+  // For edit upgrades (newMemberId): prevType tells us what was already collected.
+  //   - prevType "dietonly-standard" → diet was already charged; only collect PT now.
+  //   - prevType "basic" or "standard" → diet not yet collected; collect it now if plan is premium.
   const memberHasDiet = pendingMember
     ? (pendingMember.plan_type === "premium" || pendingMember.plan_type === "dietonly-standard")
     : pendingRenewal
       ? (pendingRenewal.plan_type === "premium" || pendingRenewal.plan_type === "dietonly-standard")
-      : Boolean(selectedMemberObj?.diet_id);
+      : (() => {
+          if (prevType === "dietonly-standard") return false; // diet already collected
+          if (selectedMemberObj?.plan_type === "premium" || selectedMemberObj?.plan_type === "dietonly-standard") return true;
+          return Boolean(selectedMemberObj?.diet_id);
+        })();
   const proratedDietBaseAmt = memberHasDiet && ptDays < 30
     ? parseFloat((dietBaseAmt / 30 * ptDays).toFixed(2))
     : dietBaseAmt;
@@ -477,14 +483,18 @@ function AssignmentModal({ assignment, allMembers, trainers, plans, onClose, onS
 
   // For new enrollment (pendingMember): diet was already collected with plan fee at enrollment.
   //   → collect PT fee only at this step.
-  // For existing member upgrade (basic→premium via newMemberId): plan already paid.
-  //   → collect PT + diet at this step.
+  // For existing member upgrade (newMemberId): plan already paid, collect only what's new.
+  //   - basic→premium: collect PT + diet now.
+  //   - dietonly-standard→premium: collect PT only (diet was already charged).
+  const isEditUpgrade = !!newMemberId && !pendingMember && !pendingRenewal;
   const feesToCollect = pendingMember || pendingRenewal
     ? ptFeeWithGst
     : ptFeeWithGst + dietWithGst;
 
-  // Grand total shown for information: plan + PT + diet (full picture)
-  const grandTotal = planWithGst + ptFeeWithGst + dietWithGst;
+  // Grand total for information: for edit upgrades, only show what's being added (no plan amount)
+  const grandTotal = isEditUpgrade
+    ? ptFeeWithGst + dietWithGst
+    : planWithGst + ptFeeWithGst + dietWithGst;
 
   useEffect(() => {
     if (feesToCollect > 0) setPtAmountToCollect(feesToCollect.toFixed(2));
@@ -632,7 +642,9 @@ function AssignmentModal({ assignment, allMembers, trainers, plans, onClose, onS
         if (aRes.data?.bill) {
           const raw = aRes.data.bill;
           const ptBase   = parseFloat(raw.pt_fee || 0);
-          const dietBase = parseFloat(raw.diet_plan_amount || 0);
+          // Only include diet in the bill if we actually collected it at this step.
+          // For dietonly-standard → premium, diet was already collected; memberHasDiet = false.
+          const dietBase = memberHasDiet ? parseFloat(raw.diet_plan_amount || 0) : 0;
           const addBase  = ptBase + dietBase;
           const gstAmt   = parseFloat((addBase * raw.gst_rate / 100).toFixed(2));
           const addTotal = parseFloat((addBase + gstAmt).toFixed(2));
@@ -640,13 +652,16 @@ function AssignmentModal({ assignment, allMembers, trainers, plans, onClose, onS
           const bal      = parseFloat(Math.max(0, addTotal - paid).toFixed(2));
           setAssignBill({
             ...raw,
-            is_pt_upgrade:   true,
-            membership_fee:  0,
-            plan_price:      addBase,
-            gst_amount:      gstAmt,
-            total_with_gst:  addTotal,
-            amount_paid:     paid,
-            balance:         bal,
+            is_pt_upgrade:    true,
+            plan_name:        "",      // hide plan info box — only show what's being added now
+            membership_fee:   0,
+            discount_amount:  0,       // hide discount rows from prior enrollment
+            diet_plan_amount: dietBase, // reflect only what's being charged now
+            plan_price:       addBase,
+            gst_amount:       gstAmt,
+            total_with_gst:   addTotal,
+            amount_paid:      paid,
+            balance:          bal,
           });
           return;
         }
@@ -844,10 +859,13 @@ function AssignmentModal({ assignment, allMembers, trainers, plans, onClose, onS
           )}
 
           {/* Amount breakdown */}
-          {form.trainer && planWithGst > 0 && (
+          {form.trainer && (isEditUpgrade ? (ptFeeWithGst > 0 || dietWithGst > 0) : planWithGst > 0) && (
             <div style={{ background: "var(--card-bg)", border: "1px solid var(--border)", borderRadius: 8, padding: "12px 14px", fontSize: 13 }}>
-              <div style={{ fontWeight: 600, marginBottom: 8, color: "var(--text1)" }}>Amount Breakdown</div>
-              {pendingDiscountAmt > 0 ? (
+              <div style={{ fontWeight: 600, marginBottom: 8, color: "var(--text1)" }}>
+                {isEditUpgrade ? "Fees Being Added" : "Amount Breakdown"}
+              </div>
+              {/* Plan amount — only for new enrollment / renewal, not for edit upgrades */}
+              {!isEditUpgrade && (pendingDiscountAmt > 0 ? (
                 <>
                   <div style={{ display: "flex", justifyContent: "space-between", color: "var(--text2)", marginBottom: 4 }}>
                     <span>Plan Price (Original)</span>
@@ -867,7 +885,7 @@ function AssignmentModal({ assignment, allMembers, trainers, plans, onClose, onS
                   <span>Plan (incl. GST)</span>
                   <span style={{ fontFamily: "var(--font-mono)" }}>₹{fmtD(planWithGst)}</span>
                 </div>
-              )}
+              ))}
               {ptFee > 0 && (
                 <>
                   <div style={{ display: "flex", justifyContent: "space-between", color: "var(--text2)", marginBottom: 4 }}>
@@ -895,7 +913,7 @@ function AssignmentModal({ assignment, allMembers, trainers, plans, onClose, onS
                 fontWeight: 700, color: "var(--accent)",
                 borderTop: "1px solid var(--border)", paddingTop: 8, marginTop: 4,
               }}>
-                <span>Grand Total</span>
+                <span>{isEditUpgrade ? "Total to Collect" : "Grand Total"}</span>
                 <span style={{ fontFamily: "var(--font-mono)" }}>₹{fmtD(grandTotal)}</span>
               </div>
               {ptFee === 0 && (
@@ -907,9 +925,13 @@ function AssignmentModal({ assignment, allMembers, trainers, plans, onClose, onS
               {!isEdit && feesToCollect > 0 && (
                 <div style={{ marginTop: 12, borderTop: "1px solid var(--border)", paddingTop: 12 }}>
                   <div style={{ fontWeight: 600, marginBottom: 4, color: "var(--text1)" }}>
-                    Collect PT Fee Now{(pendingMember || pendingRenewal) && dietWithGst > 0 ? " (Diet collected at enrollment)" : ""}
+                    {isEditUpgrade && dietWithGst > 0
+                      ? "Collect PT + Diet Fee Now"
+                      : (pendingMember || pendingRenewal) && dietWithGst > 0
+                        ? "Collect PT Fee Now (Diet collected at enrollment)"
+                        : "Collect PT Fee Now"}
                   </div>
-                  {!(pendingMember || pendingRenewal) && dietWithGst > 0 && (
+                  {isEditUpgrade && dietWithGst > 0 && (
                     <div style={{ fontSize: 11, color: "var(--text3)", marginBottom: 8 }}>
                       PT ₹{fmtD(ptFeeWithGst)} + Diet ₹{fmtD(dietWithGst)} = ₹{fmtD(feesToCollect)}
                     </div>
@@ -1585,6 +1607,7 @@ export default function TrainerAssignments() {
           plans={plans}
           newMemberId={modal === "new" ? newMemberId : null}
           newPlanId={modal === "new" ? newPlanId : null}
+          prevType={modal === "new" ? prevType : null}
           pendingMember={modal === "new" ? pendingMember : null}
           pendingRenewal={modal === "new" ? pendingRenewal : null}
           renewMemberId={modal === "new" && isRenewUpgrade ? newMemberId : null}

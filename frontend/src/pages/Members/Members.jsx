@@ -132,6 +132,11 @@ function MemberModal({ member, plans, dietPlans: initialDietPlans, onClose, onSa
           onSave({ upgradeMemberId: member.id, upgradeType: "diet_only", prevType, prevDiet: member.diet || null });
           return;
         }
+        // dietonly-standard → premium: diet already collected, need trainer for PT fee
+        if (prevType === "dietonly-standard" && nextType === "premium") {
+          onSave({ upgradeMemberId: member.id, upgradeType: "pt_only", prevType });
+          return;
+        }
         onSave(null);
       } else {
         // Standard / Premium → hold enrollment until trainer is assigned
@@ -1180,14 +1185,16 @@ function DietUpgradeModal({ memberId, memberRenewalDate, onClose, onBill }) {
         const bal = parseFloat(Math.max(0, addTotal - paid).toFixed(2));
         onBill({
           ...raw,
-          is_diet_upgrade: true,
-          membership_fee: 0,
-          pt_fee: 0,
-          plan_price: dietB,
-          gst_amount: gstAmt,
-          total_with_gst: addTotal,
-          amount_paid: paid,
-          balance: bal,
+          is_diet_upgrade:  true,
+          plan_name:        "",    // hide plan info box — only showing diet addition
+          membership_fee:   0,
+          discount_amount:  0,     // hide prior discount — not relevant to this transaction
+          pt_fee:           0,
+          plan_price:       dietB,
+          gst_amount:       gstAmt,
+          total_with_gst:   addTotal,
+          amount_paid:      paid,
+          balance:          bal,
         });
       } else onClose();
     } catch (err) {
@@ -1356,6 +1363,7 @@ export default function Members() {
         setDietUpgradeMemberId({ id: data.upgradeMemberId, prevType: data.prevType, prevDiet: data.prevDiet });
         return;
       }
+      // "pt" (basic→standard/premium) and "pt_only" (dietonly-standard→premium) both go to trainer assign
       navigate(`/trainer-assignments?newMember=${data.upgradeMemberId}&from=members&prevType=${data.prevType || "basic"}`);
       return;
     }

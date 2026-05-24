@@ -506,14 +506,17 @@ class MemberViewSet(viewsets.ModelViewSet):
         if latest_payment.diet_plan_amount >= diet_amt:
             return Response({"detail": "Diet plan fee already included in this payment cycle."}, status=400)
 
-        # Re-derive existing PT fee from plan_price = plan.base + PT + previous_diet
+        # Re-derive existing PT fee from:
+        #   plan_price = plan.base - discount + PT + previous_diet
+        #   → PT = plan_price - plan.base + discount - previous_diet
         plan_base_price = latest_payment.plan.price if latest_payment.plan else Decimal("0")
+        discount_amt    = latest_payment.discount_amount
         existing_pt_fee = max(
             Decimal("0"),
-            latest_payment.plan_price - plan_base_price - latest_payment.diet_plan_amount
+            latest_payment.plan_price - plan_base_price + discount_amt - latest_payment.diet_plan_amount
         )
 
-        base, gst_amt, total, rate = _calc_gst(plan_base_price + existing_pt_fee + diet_amt)
+        base, gst_amt, total, rate = _calc_gst(plan_base_price - discount_amt + existing_pt_fee + diet_amt)
         latest_payment.plan_price       = base
         latest_payment.diet_plan_amount = diet_amt
         latest_payment.gst_rate         = rate
