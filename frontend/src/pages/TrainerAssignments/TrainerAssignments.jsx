@@ -1611,11 +1611,24 @@ export default function TrainerAssignments() {
           pendingMember={modal === "new" ? pendingMember : null}
           pendingRenewal={modal === "new" ? pendingRenewal : null}
           renewMemberId={modal === "new" && isRenewUpgrade ? newMemberId : null}
-          onClose={() => {
+          onClose={async () => {
             // Deferred renewal: nothing was saved yet, just clean up and navigate back
             if (isRenewUpgrade) {
               sessionStorage.removeItem("pendingRenewal");
               navigate(`/${fromPage || "members"}`);
+              return;
+            }
+            // Edit upgrade cancelled: revert plan_type and personal_trainer back to original
+            // so the member's dashboard shows the correct type
+            if (newMemberId && prevType && fromPage && !isPending && modal === "new") {
+              const prevPersonalTrainer = prevType === "standard" || prevType === "premium";
+              try {
+                await api.patch(`/members/list/${newMemberId}/`, {
+                  plan_type:        prevType,
+                  personal_trainer: prevPersonalTrainer,
+                });
+              } catch (_) { /* best-effort — navigate back regardless */ }
+              navigate(`/${fromPage}`);
               return;
             }
             setModal(null);
