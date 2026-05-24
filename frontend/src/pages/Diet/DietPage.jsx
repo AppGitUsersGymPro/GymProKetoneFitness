@@ -86,11 +86,10 @@ const DietPage = () => {
                 </div>
                 <div className="diet-actions">
                     <input
-                        className="form-input"
+                        className="form-input diet-search"
                         placeholder="Search plans or foods..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        style={{ width: 240 }}
                     />
                     <button className="btn btn-primary" onClick={() => setShowModal(true)}>
                         + New Plan

@@ -39,6 +39,10 @@
     align-items: center;
 }
 
+.diet-search {
+    width: 240px;
+}
+
 .diet-stats {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -220,15 +224,80 @@
     font-style: italic;
 }
 
+/* ── Tablet (≤1024px) ─────────────────────────────────────────────────────── */
 @media (max-width: 1024px) {
     .diet-stats { grid-template-columns: repeat(2, 1fr); }
 }
 
-@media (max-width: 600px) {
-    .diet-page { padding: 16px; }
-    .diet-stats { grid-template-columns: 1fr 1fr; }
+/* ── Small tablet / large phone (≤768px) ─────────────────────────────────── */
+@media (max-width: 768px) {
+    .diet-page { padding: 20px 16px; }
+
+    /* Stack header: title on top, actions below full-width */
+    .diet-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+    .diet-actions {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+    .diet-search {
+        flex: 1;
+        min-width: 0;
+        width: auto;
+    }
+    /* New Plan button stays on the same row as search, fills remaining space */
+    .diet-actions .btn {
+        white-space: nowrap;
+    }
+
+    /* Item rows: hide notes column, shrink columns */
     .diet-item-table-header,
-    .diet-item-row { grid-template-columns: 1fr 80px 80px 65px; }
+    .diet-item-row {
+        grid-template-columns: 1fr 110px 100px 90px;
+    }
     .diet-item-row .item-notes { display: none; }
+    .diet-item-table-header span:nth-child(5) { display: none; }
+}
+
+/* ── Mobile (≤600px) ─────────────────────────────────────────────────────── */
+@media (max-width: 600px) {
+    .diet-page { padding: 14px 12px; }
+    .diet-stats { grid-template-columns: 1fr 1fr; }
+
+    .plan-card { padding: 14px 12px; }
+
+    /* Plan card header: stack title+type above meta row */
+    .plan-card-header { flex-direction: column; align-items: flex-start; gap: 6px; }
+    .plan-card-meta { width: 100%; }
+
+    .diet-item-table-header,
+    .diet-item-row {
+        grid-template-columns: 1fr 80px 80px 65px;
+        padding: 6px 8px;
+        font-size: 12.5px;
+    }
+    .diet-item-row .item-notes { display: none; }
+    .diet-item-table-header span:nth-child(5) { display: none; }
+}
+
+/* ── Very small phones (≤420px) ─────────────────────────────────────────── */
+@media (max-width: 420px) {
+    .diet-header h1 { font-size: 20px; }
+    .diet-stat-card .value { font-size: 22px; }
+    .diet-stat-card { padding: 14px 12px; }
+
+    /* Only show Food + kcal on very small screens */
+    .diet-item-table-header,
+    .diet-item-row {
+        grid-template-columns: 1fr 60px;
+    }
+    .diet-item-row .item-qty  { display: none; }
+    .diet-item-row .item-time { display: none; }
+    .diet-item-row .item-notes { display: none; }
+    .diet-item-table-header span:nth-child(2) { display: none; }
+    .diet-item-table-header span:nth-child(3) { display: none; }
     .diet-item-table-header span:nth-child(5) { display: none; }
 }

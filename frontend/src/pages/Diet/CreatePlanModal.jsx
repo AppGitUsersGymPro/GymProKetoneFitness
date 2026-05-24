@@ -59,7 +59,7 @@ const CreatePlanModal = ({ onClose, onSave, plan }) => {
 
     return (
         <div className="modal-overlay">
-            <div className="modal animate-in">
+            <div className="modal diet-plan-modal animate-in">
 
                 <div className="modal-header">
                     <h2>{isEdit ? "Edit Diet Plan" : "New Diet Plan"}</h2>
