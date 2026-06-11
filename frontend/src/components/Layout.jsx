@@ -73,7 +73,7 @@ export default function Layout() {
               style={{ width: "50px", height: "50px", borderRadius: "50%", objectFit: "cover" }}
             />
           <div className="sidebar__logo-text">
-            <span className="sidebar__logo-name">Gym Pro</span>
+            <span className="sidebar__logo-name">Ketone Fitness</span>
             <span className="sidebar__logo-sub">CRM</span>
           </div>
           <button

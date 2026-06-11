@@ -36,7 +36,7 @@ export default function Login() {
               style={{ width: "50px", height: "50px", borderRadius: "50%", objectFit: "cover" }}
             />
           <div>
-            <h3 className="login-logo-name">Gym Pro</h3>
+            <h3 className="login-logo-name">Ketone Fitness</h3>
             <div className="login-logo-sub">Management System</div>
           </div>
         </div>
