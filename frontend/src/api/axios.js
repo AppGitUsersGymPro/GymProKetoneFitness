@@ -12,7 +12,7 @@ api.interceptors.response.use(
   (res) => res,
   async (err) => {
     const orig = err.config;
-    if (err.response?.status === 401 && !orig._retry) {
+    if (err.response?.status === 401 && !orig._retry && !orig.url?.includes('/auth/login')) {
       orig._retry = true;
       try {
         const refresh = localStorage.getItem("refresh");
