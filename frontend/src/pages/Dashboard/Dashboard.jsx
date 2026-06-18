@@ -154,7 +154,10 @@ export default function Dashboard() {
       <div className="card checkin-table-wrap">
         <div className="dash-table-header">
           <span className="dash-chart-title">Today's Check-ins</span>
-          <span className="badge badge-orange">{checkins.length} checked in</span>
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            <span className="badge badge-green">{todayCheckins} checked in</span>
+            <span className="badge badge-red">{todayAbsent} not checked in</span>
+          </div>
         </div>
         {checkins.length === 0 ? (
           <div style={{ textAlign: "center", padding: "32px 16px", color: "var(--text3)", fontSize: 14 }}>
