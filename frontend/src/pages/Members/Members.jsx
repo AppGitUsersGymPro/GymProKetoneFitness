@@ -36,6 +36,8 @@ function MemberModal({ member, plans, dietPlans: initialDietPlans, onClose, onSa
   const [dietBaseAmt, setDietBaseAmt] = useState(0);
   const [gymGstRate, setGymGstRate] = useState(18);
   const [discountedPlanBase, setDiscountedPlanBase] = useState("");
+  const [photoFile, setPhotoFile] = useState(null);
+  const [photoPreview, setPhotoPreview] = useState(isEdit ? (member?.photo || member?.photo_url || null) : null);
   // Keep an always-fresh list of diet plans — parent may have a stale copy
   // if plans were created/updated on another page since the last Members load.
   const [dietPlans, setDietPlans] = useState(initialDietPlans || []);
@@ -109,11 +111,21 @@ function MemberModal({ member, plans, dietPlans: initialDietPlans, onClose, onSa
     e.preventDefault(); setSaving(true);
     try {
       if (isEdit) {
+        // Strip `photo` — it's an ImageField on the backend and can only be
+        // updated via multipart FormData (done separately below if a new file
+        // was chosen). Sending the existing URL string in JSON causes DRF to
+        // reject it with "The submitted data was not a file."
+        const { photo: _stripPhoto, ...formData } = form;
         await api.patch(`/members/list/${member.id}/`, {
-          ...form,
+          ...formData,
           diet: form.diet || null,
           foodType: form.foodType || "veg"
         });
+        if (photoFile) {
+          const fd = new FormData();
+          fd.append('photo', photoFile);
+          await api.patch(`/members/list/${member.id}/`, fd);
+        }
         toast.success("Member updated!");
         const prevType = member.plan_type || "basic";
         const nextType = form.plan_type;
@@ -178,6 +190,16 @@ function MemberModal({ member, plans, dietPlans: initialDietPlans, onClose, onSa
           foodType:        form.foodType || "veg",
           discount_amount: discountAmt,
         });
+        if (photoFile && res.data.id) {
+          try {
+            const fd = new FormData();
+            fd.append('photo', photoFile);
+            await api.patch(`/members/list/${res.data.id}/`, fd);
+          } catch (photoErr) {
+            console.warn("Photo upload failed:", photoErr);
+            toast.error("Member enrolled — photo upload failed. You can re-add it by editing the member.");
+          }
+        }
         toast.success("Member enrolled!");
         let billData = res.data.bill ?? null;
         if (billData && res.data.id) {
@@ -468,6 +490,51 @@ function MemberModal({ member, plans, dietPlans: initialDietPlans, onClose, onSa
               <option value="other">Other</option>
             </select>
           </div>
+
+          {/* ── Member Photo (optional) ── */}
+          <div className="form-group">
+            <label className="form-label">
+              Member Photo <span style={{ color: "var(--text3)", fontWeight: 400 }}>(optional — can add later)</span>
+            </label>
+            <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+              <div style={{
+                width: 64, height: 64, borderRadius: "50%", flexShrink: 0,
+                background: "var(--accent-dim)", border: "2px solid rgba(249,115,22,.25)",
+                overflow: "hidden", position: "relative",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: 24, fontWeight: 700, color: "var(--accent)"
+              }}>
+                <span style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  {form.name?.[0]?.toUpperCase() || "?"}
+                </span>
+                {photoPreview && (
+                  <img src={photoPreview} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", display: "block" }} onError={e => { e.currentTarget.style.display = "none"; }} />
+                )}
+              </div>
+              <div>
+                <input type="file" accept="image/*" id="member-photo-upload"
+                  style={{ display: "none" }}
+                  onChange={e => {
+                    const f = e.target.files?.[0];
+                    if (!f) return;
+                    setPhotoFile(f);
+                    setPhotoPreview(URL.createObjectURL(f));
+                  }}
+                />
+                <label htmlFor="member-photo-upload" className="btn btn-secondary btn-sm" style={{ cursor: "pointer", display: "inline-flex" }}>
+                  {photoPreview ? "Change Photo" : "Upload Photo"}
+                </label>
+                {photoFile && (
+                  <button type="button" className="btn btn-sm"
+                    style={{ marginLeft: 8, color: "var(--danger)", background: "rgba(239,68,68,.08)", border: "1px solid rgba(239,68,68,.2)" }}
+                    onClick={() => { setPhotoFile(null); setPhotoPreview(isEdit ? (member?.photo || member?.photo_url || null) : null); }}>
+                    Remove
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+
           <div className="form-group">
             <label className="form-label">Notes</label>
             <textarea className="form-input" value={form.notes || ""}
@@ -720,8 +787,8 @@ function RenewModal({ member, plans, dietPlans: initialDietPlans = [], onClose, 
           {planTotal > 0 && (
             <div style={{
               display: "flex", justifyContent: "space-between", alignItems: "center",
-              background: balance > 0 ? "rgba(255,184,48,.1)" : "rgba(168,255,87,.08)",
-              border: `1px solid ${balance > 0 ? "rgba(255,184,48,.3)" : "rgba(168,255,87,.2)"}`,
+              background: balance > 0 ? "rgba(255,184,48,.1)" : "rgba(249,115,22,.06)",
+              border: `1px solid ${balance > 0 ? "rgba(255,184,48,.3)" : "rgba(249,115,22,.2)"}`,
               borderRadius: 8, padding: "10px 14px", fontSize: 13
             }}>
               <span style={{ color: "var(--text2)" }}>
@@ -939,9 +1006,9 @@ function PaymentHistoryModal({ member, onClose, onRefresh, onBill, gymInfo = {} 
                       <span style={{
                         fontSize: 10, fontWeight: 800, letterSpacing: .8, padding: "2px 8px",
                         borderRadius: 100,
-                        background: (p.invoice_number || "").includes("-R") ? "rgba(77,240,255,.12)" : "rgba(168,255,87,.12)",
+                        background: (p.invoice_number || "").includes("-R") ? "rgba(14,165,233,.10)" : "rgba(249,115,22,.10)",
                         color: (p.invoice_number || "").includes("-R") ? "var(--teal)" : "var(--accent)",
-                        border: (p.invoice_number || "").includes("-R") ? "1px solid rgba(77,240,255,.3)" : "1px solid rgba(168,255,87,.3)"
+                        border: (p.invoice_number || "").includes("-R") ? "1px solid rgba(14,165,233,.3)" : "1px solid rgba(249,115,22,.3)"
                       }}>
                         {(p.invoice_number || "").includes("-R") ? "RENEWAL" : "ENROLLMENT"}
                       </span>
@@ -963,18 +1030,18 @@ function PaymentHistoryModal({ member, onClose, onRefresh, onBill, gymInfo = {} 
                     background: "var(--surface)", padding: "5px 14px",
                     borderBottom: "1px solid var(--border)", fontSize: 11, color: "var(--text3)"
                   }}>
-                    Billed: <strong style={{ color: "var(--text1)" }}>
+                    Billed: <strong style={{ color: "var(--text1)", fontFamily: "var(--font-mono)" }}>
                       ₹{Number(p.total_with_gst || 0).toLocaleString("en-IN")}
                     </strong>
-                    &ensp;|&ensp; Membership: <strong>₹{(Number(p.plan_price || 0) - Number(p.diet_plan_amount || 0)).toLocaleString("en-IN")}</strong>
+                    &ensp;|&ensp; Membership: <strong style={{ fontFamily: "var(--font-mono)" }}>₹{(Number(p.plan_price || 0) - Number(p.diet_plan_amount || 0)).toLocaleString("en-IN")}</strong>
                     {Number(p.diet_plan_amount || 0) > 0 && (
                       <>
-                        &ensp;+&ensp; Diet: <strong style={{ color: "var(--teal)" }}>
+                        &ensp;+&ensp; Diet: <strong style={{ color: "var(--teal)", fontFamily: "var(--font-mono)" }}>
                           ₹{Number(p.diet_plan_amount).toLocaleString("en-IN")}
                         </strong>
                       </>
                     )}
-                    &ensp;+&ensp; GST {p.gst_rate || 0}%: <strong style={{ color: "var(--warn)" }}>
+                    &ensp;+&ensp; GST {p.gst_rate || 0}%: <strong style={{ color: "var(--warn)", fontFamily: "var(--font-mono)" }}>
                       ₹{Number(p.gst_amount || 0).toLocaleString("en-IN")}
                     </strong>
                   </div>
@@ -1027,11 +1094,11 @@ function PaymentHistoryModal({ member, onClose, onRefresh, onBill, gymInfo = {} 
                     display: "flex", justifyContent: "space-between"
                   }}>
                     <span style={{ color: "var(--text3)" }}>
-                      Total Paid: <strong style={{ color: "var(--accent)" }}>
+                      Total Paid: <strong style={{ color: "var(--accent)", fontFamily: "var(--font-mono)" }}>
                         ₹{Number(p.amount_paid).toLocaleString("en-IN")}
                       </strong>
                     </span>
-                    <strong style={{ color: parseFloat(p.balance) > 0 ? "var(--warn)" : "var(--teal)" }}>
+                    <strong style={{ color: parseFloat(p.balance) > 0 ? "var(--warn)" : "var(--teal)", fontFamily: "var(--font-mono)" }}>
                       Balance: ₹{Number(p.balance).toLocaleString("en-IN")}
                     </strong>
                   </div>
@@ -1052,48 +1119,65 @@ function ViewMemberModal({ member: m, onClose, onEdit, onRenew, onPayments, onCa
       <div className="modal" style={{ maxWidth: 420 }} onClick={e => e.stopPropagation()}>
         <div className="modal-title" style={{ marginBottom: 16 }}>Member Details</div>
 
-        {/* ID + Status */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-          <span style={{
-            fontFamily: "var(--font-mono)", fontSize: 13, color: "var(--accent)",
-            fontWeight: 700, background: "var(--accent-dim)", padding: "3px 10px", borderRadius: 6
+        {/* Photo + ID + Status */}
+        <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 16 }}>
+          <div style={{
+            width: 64, height: 64, borderRadius: "50%", flexShrink: 0,
+            background: "var(--accent-dim)", border: "2px solid rgba(249,115,22,.3)",
+            overflow: "hidden", position: "relative",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: 26, fontWeight: 700, color: "var(--accent)"
           }}>
-            {m.member_id_display || `M${String(m.id).padStart(4, "0")}`}
-          </span>
-          <span className={`badge ${{ active: "badge-green", expired: "badge-red", cancelled: "badge-gray", paused: "badge-yellow" }[m.status] || "badge-gray"}`}>
-            {m.status}
-          </span>
+            <span style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>{m.name?.[0]?.toUpperCase()}</span>
+            {(m.photo || m.photo_url) && (
+              <img src={m.photo || m.photo_url} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", display: "block" }} onError={e => { e.currentTarget.style.display = "none"; }} />
+            )}
+          </div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontWeight: 700, fontSize: 16, color: "var(--text1)", marginBottom: 4 }}>{m.name}</div>
+            <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+              <span style={{
+                fontFamily: "var(--font-mono)", fontSize: 12, color: "var(--accent)",
+                fontWeight: 700, background: "var(--accent-dim)", padding: "2px 8px", borderRadius: 6
+              }}>
+                {m.member_id_display || `M${String(m.id).padStart(4, "0")}`}
+              </span>
+              <span className={`badge ${{ active: "badge-green", expired: "badge-red", cancelled: "badge-gray", paused: "badge-yellow" }[m.status] || "badge-gray"}`}>
+                {m.status}
+              </span>
+            </div>
+          </div>
         </div>
 
         {/* Core info */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px 16px", marginBottom: 16 }}>
           {[
             { label: "Name", val: m.name },
-            { label: "Phone", val: m.phone || "—" },
+            { label: "Phone", val: m.phone || "—", mono: true },
             { label: "Email", val: m.email || "—" },
             { label: "Gender", val: m.gender || "—" },
             { label: "Plan", val: m.plan_name || "No Plan" },
             { label: "Plan Type", val: m.plan_type || "—" },
-            { label: "Renewal", val: m.renewal_date || "—" },
-            { label: "Days Left", val: m.days_until_expiry != null ? `${m.days_until_expiry}d` : "—" },
-            { label: "Total Paid", val: `₹${Number(m.total_paid || 0).toLocaleString("en-IN")}` },
-            { label: "Balance Due", val: (m.balance_due || 0) > 0 ? `₹${Number(m.balance_due).toLocaleString("en-IN")}` : "None" },
-          ].map(({ label, val }) => (
+            { label: "Renewal", val: m.renewal_date || "—", mono: true },
+            { label: "Days Left", val: m.days_until_expiry != null ? `${m.days_until_expiry}d` : "—", mono: true },
+            { label: "Total Paid", val: `₹${Number(m.total_paid || 0).toLocaleString("en-IN")}`, mono: true },
+            { label: "Balance Due", val: (m.balance_due || 0) > 0 ? `₹${Number(m.balance_due).toLocaleString("en-IN")}` : "None", mono: true },
+          ].map(({ label, val, mono }) => (
             <div key={label}>
               <div style={{ fontSize: 11, color: "var(--text3)", marginBottom: 2 }}>{label}</div>
-              <div style={{ fontSize: 13, color: "var(--text1)", fontWeight: 500 }}>{val}</div>
+              <div style={{ fontSize: 14, color: "var(--text1)", fontWeight: 500, fontFamily: mono ? "var(--font-mono)" : "var(--font-body)" }}>{val}</div>
             </div>
           ))}
           {m.diet_name && (
             <div style={{ gridColumn: "span 2" }}>
               <div style={{ fontSize: 11, color: "var(--text3)", marginBottom: 2 }}>Diet Plan</div>
-              <div style={{ fontSize: 13, color: "var(--teal)" }}>🥗 {m.diet_name}</div>
+              <div style={{ fontSize: 14, color: "var(--teal)" }}>🥗 {m.diet_name}</div>
             </div>
           )}
           {m.notes && (
             <div style={{ gridColumn: "span 2" }}>
               <div style={{ fontSize: 11, color: "var(--text3)", marginBottom: 2 }}>Notes</div>
-              <div style={{ fontSize: 12, color: "var(--text2)" }}>{m.notes}</div>
+              <div style={{ fontSize: 13, color: "var(--text2)" }}>{m.notes}</div>
             </div>
           )}
         </div>
@@ -1101,7 +1185,7 @@ function ViewMemberModal({ member: m, onClose, onEdit, onRenew, onPayments, onCa
         {/* Actions */}
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
           <button className="btn btn-sm btn-secondary" onClick={onEdit}>Edit</button>
-          <button className="btn btn-sm" style={{ background: "rgba(45,255,195,.12)", color: "var(--teal)" }}
+          <button className="btn btn-sm" style={{ background: "rgba(14,165,233,.10)", color: "var(--teal)" }}
             disabled={m.days_until_expiry != null && m.days_until_expiry > 0} onClick={onRenew}>Renew</button>
           <button className="btn btn-sm" style={{ background: "rgba(77,166,255,.12)", color: "var(--info)" }} onClick={onPayments}>
             Payments{(m.balance_due || 0) > 0 ? " ⚠" : ""}
@@ -1252,8 +1336,8 @@ function DietUpgradeModal({ memberId, memberRenewalDate, onClose, onBill }) {
           {dietWithGst > 0 && (
             <div style={{
               display: "flex", justifyContent: "space-between", alignItems: "center",
-              background: balance > 0 ? "rgba(255,184,48,.1)" : "rgba(168,255,87,.08)",
-              border: `1px solid ${balance > 0 ? "rgba(255,184,48,.3)" : "rgba(168,255,87,.2)"}`,
+              background: balance > 0 ? "rgba(255,184,48,.1)" : "rgba(249,115,22,.06)",
+              border: `1px solid ${balance > 0 ? "rgba(255,184,48,.3)" : "rgba(249,115,22,.2)"}`,
               borderRadius: 8, padding: "10px 14px", fontSize: 13
             }}>
               <span style={{ color: "var(--text2)" }}>{balance > 0 ? "⚠ Balance remaining" : "✓ Fully paid"}</span>
@@ -1588,17 +1672,33 @@ export default function Members() {
         ) : members.map(m => (
           <div key={m.id} className="member-mobile-card">
             <div className="member-mobile-card__left">
-              <span className="member-mobile-card__id">
-                {m.member_id_display || `M${String(m.id).padStart(4, "0")}`}
-              </span>
-              <span className="member-mobile-card__name">{m.name}</span>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
+                <div style={{
+                  width: 44, height: 44, borderRadius: "50%", flexShrink: 0,
+                  background: "var(--accent-dim)", border: "2px solid rgba(249,115,22,.2)",
+                  overflow: "hidden", position: "relative",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: 18, fontWeight: 700, color: "var(--accent)"
+                }}>
+                  <span style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>{m.name?.[0]?.toUpperCase()}</span>
+                  {(m.photo || m.photo_url) && (
+                    <img src={m.photo || m.photo_url} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", display: "block" }} onError={e => { e.currentTarget.style.display = "none"; }} />
+                  )}
+                </div>
+                <div>
+                  <span className="member-mobile-card__id">
+                    {m.member_id_display || `M${String(m.id).padStart(4, "0")}`}
+                  </span>
+                  <span className="member-mobile-card__name" style={{ display: "block" }}>{m.name}</span>
+                </div>
+              </div>
               <span className={`badge ${{ active: "badge-green", expired: "badge-red", cancelled: "badge-gray", paused: "badge-yellow" }[m.status] || "badge-gray"}`} style={{ fontSize: 11 }}>
                 {m.status}
               </span>
             </div>
             <button
               className="btn btn-sm"
-              style={{ background: "var(--accent-dim)", color: "var(--accent)", border: "1px solid rgba(168,255,87,.3)", whiteSpace: "nowrap" }}
+              style={{ background: "var(--accent-dim)", color: "var(--accent)", border: "1px solid rgba(249,115,22,.3)", whiteSpace: "nowrap" }}
               onClick={() => setViewMember(m)}>
               View Member
             </button>
@@ -1634,41 +1734,58 @@ export default function Members() {
                 ) : members.map(m => (
                   <tr key={m.id}>
 
-                    {/* ── Member cell: IDs + name + contact + DOB ── */}
+                    {/* ── Member cell: avatar + IDs + name + contact + DOB ── */}
                     <td style={{ minWidth: 200 }}>
-                      <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap", marginBottom: 3 }}>
-                        <span style={{
-                          fontFamily: "var(--font-mono)", fontSize: 11,
-                          color: "var(--accent)", fontWeight: 700,
-                          background: "var(--accent-dim)", padding: "1px 6px", borderRadius: 4
+                      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                        {/* Photo avatar */}
+                        <div style={{
+                          width: 42, height: 42, borderRadius: "50%", flexShrink: 0,
+                          background: "var(--accent-dim)", border: "2px solid rgba(249,115,22,.2)",
+                          overflow: "hidden", position: "relative",
+                          display: "flex", alignItems: "center",
+                          justifyContent: "center", fontSize: 16, fontWeight: 700, color: "var(--accent)"
                         }}>
-                          {m.member_id_display || `M${String(m.id).padStart(4, "0")}`}
-                        </span>
-                        {m.gym_member_id && (
-                          <span style={{
-                            fontFamily: "var(--font-mono)", fontSize: 11,
-                            color: "var(--text3)", background: "var(--surface2)",
-                            padding: "1px 6px", borderRadius: 4, border: "1px solid var(--border)"
-                          }}>
-                            {m.gym_member_id}
-                          </span>
-                        )}
-                      </div>
-                      <div style={{ fontWeight: 600, fontSize: 13 }}>{m.name}</div>
-                      <div style={{ fontSize: 11, color: "var(--text3)", marginTop: 2 }}>
-                        {m.phone}
-                        {m.email && <span> · {m.email}</span>}
-                      </div>
-                      {m.dob && (
-                        <div style={{ fontSize: 11, color: "var(--text3)", marginTop: 1 }}>
-                          DOB: {m.dob}
+                          <span style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>{m.name?.[0]?.toUpperCase()}</span>
+                          {(m.photo || m.photo_url) && (
+                            <img src={m.photo || m.photo_url} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", display: "block" }} onError={e => { e.currentTarget.style.display = "none"; }} />
+                          )}
                         </div>
-                      )}
+                        <div>
+                          <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap", marginBottom: 3 }}>
+                            <span style={{
+                              fontFamily: "var(--font-mono)", fontSize: 11,
+                              color: "var(--accent)", fontWeight: 700,
+                              background: "var(--accent-dim)", padding: "1px 6px", borderRadius: 4
+                            }}>
+                              {m.member_id_display || `M${String(m.id).padStart(4, "0")}`}
+                            </span>
+                            {m.gym_member_id && (
+                              <span style={{
+                                fontFamily: "var(--font-mono)", fontSize: 11,
+                                color: "var(--text3)", background: "var(--surface2)",
+                                padding: "1px 6px", borderRadius: 4, border: "1px solid var(--border)"
+                              }}>
+                                {m.gym_member_id}
+                              </span>
+                            )}
+                          </div>
+                          <div style={{ fontWeight: 600 }}>{m.name}</div>
+                          <div style={{ fontSize: 11, color: "var(--text3)", marginTop: 2 }}>
+                            {m.phone}
+                            {m.email && <span> · {m.email}</span>}
+                          </div>
+                          {m.dob && (
+                            <div style={{ fontSize: 11, color: "var(--text3)", marginTop: 1 }}>
+                              DOB: {m.dob}
+                            </div>
+                          )}
+                        </div>
+                      </div>
                     </td>
 
                     {/* ── Plan cell: name + type + diet ── */}
                     <td style={{ minWidth: 150 }}>
-                      <div style={{ fontSize: 13, fontWeight: 500 }}>
+                      <div style={{ fontWeight: 500 }}>
                         {m.plan_name || <span style={{ color: "var(--text3)" }}>No Plan</span>}
                       </div>
                       <div style={{ fontSize: 11, color: "var(--text3)", marginTop: 2, textTransform: "capitalize" }}>
@@ -1684,7 +1801,7 @@ export default function Members() {
                     {/* ── Renewal cell: date + days badge ── */}
                     <td style={{ minWidth: 110, whiteSpace: "nowrap" }}>
                       <div style={{
-                        fontSize: 13,
+                        fontFamily: "var(--font-mono)",
                         color: (m.days_until_expiry ?? 99) <= 0 ? "var(--danger)"
                           : (m.days_until_expiry ?? 99) <= 7 ? "var(--warn)" : "var(--text2)"
                       }}>
@@ -1704,7 +1821,7 @@ export default function Members() {
 
                     {/* ── Financials cell: paid + balance ── */}
                     <td style={{ textAlign: "right", minWidth: 110 }}>
-                      <div style={{ fontFamily: "var(--font-mono)", fontSize: 13, color: "var(--accent)" }}>
+                      <div style={{ fontFamily: "var(--font-mono)", color: "var(--accent)" }}>
                         ₹{Number(m.total_paid || 0).toLocaleString("en-IN")}
                       </div>
                       <div style={{ marginTop: 3 }}>
@@ -1740,7 +1857,7 @@ export default function Members() {
                           <button className="btn btn-sm btn-secondary"
                             onClick={() => { setSelected(m); setModal("edit"); }}>Edit</button>
                           <button className="btn btn-sm"
-                            style={{ background: "rgba(45,255,195,.12)", color: "var(--teal)" }}
+                            style={{ background: "rgba(14,165,233,.10)", color: "var(--teal)" }}
                             disabled={m.days_until_expiry != null && m.days_until_expiry > 0}
                             onClick={() => { setSelected(m); setModal("renew"); }}>Renew</button>
                         </div>

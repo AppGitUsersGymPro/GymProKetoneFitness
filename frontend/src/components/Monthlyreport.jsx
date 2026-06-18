@@ -41,8 +41,8 @@ export default function MonthlyReport({ defaultMonth, defaultYear, onClose }) {
   .rp-header{background:linear-gradient(135deg,#1a1a2e,#16213e);color:#fff;padding:24px 24px}
   .rp-header h1{font-size:20px;font-weight:800;margin-bottom:6px;letter-spacing:.5px}
   .rp-gym-info{font-size:12px;color:rgba(255,255,255,.65);line-height:1.8}
-  .rp-period{display:inline-block;margin-top:8px;background:rgba(168,255,87,.15);
-    color:#a8ff57;border:1px solid rgba(168,255,87,.3);border-radius:100px;
+  .rp-period{display:inline-block;margin-top:8px;background:rgba(249,115,22,.12);
+    color:#f97316;border:1px solid rgba(249,115,22,.3);border-radius:100px;
     padding:3px 14px;font-size:11px;font-weight:700;letter-spacing:1px}
   /* summary grid */
   .summary-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:20px 0}

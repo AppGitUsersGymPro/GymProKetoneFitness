@@ -73,9 +73,9 @@
 .rp-period {
   display: inline-block;
   margin-top: 10px;
-  background: rgba(168, 255, 87, 0.15);
-  color: #a8ff57;            /* explicit — not a var */
-  border: 1px solid rgba(168, 255, 87, 0.35);
+  background: rgba(249,115,22,0.12);
+  color: var(--accent);
+  border: 1px solid rgba(249,115,22,0.3);
   border-radius: 100px;
   padding: 3px 14px;
   font-size: 11px;

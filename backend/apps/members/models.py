@@ -29,6 +29,7 @@ class Member(models.Model):
     gender        = models.CharField(max_length=10, choices=GENDER, blank=True)
     address      = models.TextField(blank=True)
     photo_url    = models.URLField(blank=True)
+    photo        = models.ImageField(upload_to='members/', null=True, blank=True)
     foodType     = models.CharField(max_length=10, choices=FOODTYPE, default="veg")
     plan         = models.ForeignKey(MembershipPlan, on_delete=models.SET_NULL, null=True, blank=True)
     plan_type     = models.CharField(max_length=20, choices=PLANTYPE, default="basic")

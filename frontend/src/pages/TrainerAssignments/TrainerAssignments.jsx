@@ -26,10 +26,10 @@ const PT_BILL_CSS = `
   .header{background:linear-gradient(135deg,#1a1a2e,#16213e);color:#fff;padding:24px 32px;text-align:center}
   .gym-name{font-size:20px;font-weight:800;letter-spacing:1px;margin-bottom:4px}
   .gym-sub{font-size:11px;color:rgba(255,255,255,.65);line-height:1.7}
-  .gym-gstin{display:inline-block;margin-top:6px;background:rgba(168,255,87,.15);
-    color:#a8ff57;border:1px solid rgba(168,255,87,.3);border-radius:100px;
+  .gym-gstin{display:inline-block;margin-top:6px;background:rgba(249,115,22,.12);
+    color:#f97316;border:1px solid rgba(249,115,22,.3);border-radius:100px;
     padding:2px 12px;font-size:11px;font-weight:700;letter-spacing:1px}
-  .doc-title{background:#a8ff57;color:#08080a;text-align:center;padding:9px;
+  .doc-title{background:#f97316;color:#fff;text-align:center;padding:9px;
     font-size:12px;font-weight:800;letter-spacing:3px;text-transform:uppercase}
   .body{padding:22px 32px}
   .meta{display:flex;justify-content:space-between;margin-bottom:14px;
@@ -212,7 +212,7 @@ function PTRenewalModal({ assignment, onClose, onSave }) {
           /* ── Success state: show bill download ── */
           <>
             <div style={{
-              background: "rgba(168,255,87,.08)", border: "1px solid rgba(168,255,87,.3)",
+              background: "rgba(249,115,22,.07)", border: "1px solid rgba(249,115,22,.3)",
               borderRadius: 8, padding: "12px 14px", color: "var(--accent)", fontSize: 13, marginBottom: 16,
             }}>
               PT renewed successfully for <strong>{bill.pt_days} days</strong> ({bill.pt_start_date} → {bill.pt_end_date}).
@@ -686,8 +686,8 @@ function AssignmentModal({ assignment, allMembers, trainers, plans, onClose, onS
 
         {pendingMember && (
           <div style={{
-            background: "rgba(168,255,87,.08)", color: "var(--accent)",
-            border: "1px solid rgba(168,255,87,.3)", borderRadius: 8, padding: "10px 14px",
+            background: "rgba(249,115,22,.07)", color: "var(--accent)",
+            border: "1px solid rgba(249,115,22,.3)", borderRadius: 8, padding: "10px 14px",
             marginBottom: 14, fontSize: 13,
           }}>
             Completing enrollment for <strong>{pendingMember.name}</strong> — assign a trainer below.
@@ -696,8 +696,8 @@ function AssignmentModal({ assignment, allMembers, trainers, plans, onClose, onS
 
         {pendingRenewal && selectedMemberObj && (
           <div style={{
-            background: "rgba(45,255,195,.08)", color: "var(--teal)",
-            border: "1px solid rgba(45,255,195,.3)", borderRadius: 8, padding: "10px 14px",
+            background: "rgba(14,165,233,.08)", color: "var(--teal)",
+            border: "1px solid rgba(14,165,233,.3)", borderRadius: 8, padding: "10px 14px",
             marginBottom: 14, fontSize: 13,
           }}>
             Renewing <strong>{selectedMemberObj.name}</strong> with plan upgrade — assign a trainer to complete renewal.

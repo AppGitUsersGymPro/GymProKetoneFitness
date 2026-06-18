@@ -136,7 +136,7 @@ function ShiftModal({ shift, onClose, onSave }) {
                       padding: "5px 12px", borderRadius: 20, fontSize: 12, fontWeight: 700,
                       border: "1px solid",
                       borderColor: selectedDays.includes(i) ? "var(--accent)" : "var(--border)",
-                      background: selectedDays.includes(i) ? "rgba(168,255,87,.15)" : "transparent",
+                      background: selectedDays.includes(i) ? "rgba(249,115,22,.12)" : "transparent",
                       color: selectedDays.includes(i) ? "var(--accent)" : "var(--text3)",
                       cursor: "pointer",
                     }}>
@@ -278,9 +278,9 @@ function ShiftsTab() {
                   return (
                     <span key={i} style={{
                       padding: "2px 8px", borderRadius: 20, fontSize: 10, fontWeight: 700,
-                      background: active ? "rgba(168,255,87,.15)" : "var(--surface2)",
+                      background: active ? "rgba(249,115,22,.12)" : "var(--surface2)",
                       color: active ? "var(--accent)" : "var(--text3)",
-                      border: `1px solid ${active ? "rgba(168,255,87,.3)" : "var(--border)"}`,
+                      border: `1px solid ${active ? "rgba(249,115,22,.3)" : "var(--border)"}`,
                     }}>{d}</span>
                   );
                 })}
@@ -467,8 +467,8 @@ function StaffCalendar({ staffId, staffName, onBack }) {
         {shift?.name && (
           <span style={{
             fontSize: 12, fontWeight: 600, padding: "3px 12px", borderRadius: 20,
-            background: "rgba(168,255,87,.12)", color: "var(--accent)",
-            border: "1px solid rgba(168,255,87,.25)",
+            background: "rgba(249,115,22,.10)", color: "var(--accent)",
+            border: "1px solid rgba(249,115,22,.22)",
           }}>
             {shift.name} · {shift.start_time?.slice(0, 5)}–{shift.end_time?.slice(0, 5)}
           </span>
@@ -520,7 +520,7 @@ function StaffCalendar({ staffId, staffName, onBack }) {
 
             {/* Total worked hours — wider box, prominent */}
             <div style={{
-              background: "var(--surface)", border: "2px solid rgba(168,255,87,.3)",
+              background: "var(--surface)", border: "2px solid rgba(249,115,22,.3)",
               borderRadius: 8, padding: "8px 18px", textAlign: "center", minWidth: 110,
             }}>
               <div style={{ fontSize: 20, fontWeight: 800, color: "var(--accent)", fontFamily: "var(--font-mono)" }}>
@@ -1100,7 +1100,7 @@ function PaymentsTab({ staffList }) {
                     <tr key={r.staff_id} style={{ opacity: isPaid ? 0.8 : 1 }}>
                       {/* Name + Role */}
                       <td>
-                        <div style={{ fontWeight: 700, fontSize: 13 }}>{r.staff_name}</div>
+                        <div style={{ fontWeight: 700 }}>{r.staff_name}</div>
                         <div>
                           <span className="badge badge-blue" style={{ fontSize: 10 }}>{r.staff_role}</span>
                         </div>
@@ -1399,8 +1399,8 @@ export default function Staff() {
                 </button>
                 <button className="btn btn-sm"
                   style={{
-                    background: "rgba(168,255,87,.1)", color: "var(--accent)",
-                    border: "1px solid rgba(168,255,87,.2)", whiteSpace: "nowrap"
+                    background: "rgba(249,115,22,.09)", color: "var(--accent)",
+                    border: "1px solid rgba(249,115,22,.2)", whiteSpace: "nowrap"
                   }}
                   onClick={() => setCalStaff({ id: s.id, name: s.name })}>
                   📅 Calendar
@@ -1459,8 +1459,8 @@ export default function Staff() {
                       </button>
                       <button className="btn btn-sm"
                         style={{
-                          background: "rgba(168,255,87,.1)", color: "var(--accent)",
-                          border: "1px solid rgba(168,255,87,.2)"
+                          background: "rgba(249,115,22,.09)", color: "var(--accent)",
+                          border: "1px solid rgba(249,115,22,.2)"
                         }}
                         onClick={() => setCalStaff({ id: s.id, name: s.name })}>
                         📅 Calendar

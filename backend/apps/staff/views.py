@@ -263,10 +263,15 @@ class StaffViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=["get"])
     def stats(self, request):
+        today = timezone.localdate()
+        today_checkins = StaffAttendance.objects.filter(
+            date=today, check_in__isnull=False
+        ).count()
         return Response({
-            "total":    StaffMember.objects.count(),
-            "active":   StaffMember.objects.filter(status="active").count(),
-            "on_leave": StaffMember.objects.filter(status="on_leave").count(),
+            "total":          StaffMember.objects.count(),
+            "active":         StaffMember.objects.filter(status="active").count(),
+            "on_leave":       StaffMember.objects.filter(status="on_leave").count(),
+            "today_checkins": today_checkins,
         })
 
     @action(detail=False, methods=["post"], url_path="generate-payments")

@@ -121,7 +121,7 @@ export default function Equipment() {
       {/* Stats */}
       <div className="grid-3" style={{marginBottom:20}}>
         <div className="stat-card animate-in">
-          <div className="icon" style={{background:"rgba(168,255,87,.12)",color:"var(--accent)"}}>◆</div>
+          <div className="icon" style={{background:"rgba(249,115,22,.10)",color:"var(--accent)"}}>◆</div>
           <div className="label">Total Equipment</div>
           <div className="value">{stats.total||0}</div>
         </div>

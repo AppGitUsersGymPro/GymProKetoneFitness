@@ -393,8 +393,8 @@ export default function Finances() {
       }}>
         <div style={{ color: "var(--text3)", marginBottom: 4 }}>{label}</div>
         {payload.map(p => (
-          <div key={p.name} style={{ color: p.color }}>
-            {p.name}: ₹{Number(p.value).toLocaleString("en-IN")}
+          <div key={p.name} style={{ color: p.color, fontFamily: "var(--font-body)" }}>
+            {p.name}: <span style={{ fontFamily: "var(--font-mono)" }}>₹{Number(p.value).toLocaleString("en-IN")}</span>
           </div>
         ))}
       </div>
@@ -620,9 +620,9 @@ export default function Finances() {
                 <Tooltip content={customTooltip} />
                 <Legend iconType="circle" iconSize={8}
                   wrapperStyle={{ fontSize: 12, color: "var(--text2)" }} />
-                <Bar dataKey="income" fill="#a8ff57" name="Income" radius={[3, 3, 0, 0]} />
+                <Bar dataKey="income" fill="#f97316" name="Income" radius={[3, 3, 0, 0]} />
                 <Bar dataKey="expense" fill="#ff5b5b" name="Expense" radius={[3, 3, 0, 0]} />
-                <Bar dataKey="savings" fill="#2dffc3" name="Savings" radius={[3, 3, 0, 0]} />
+                <Bar dataKey="savings" fill="#10b981" name="Savings" radius={[3, 3, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           )}
@@ -690,7 +690,7 @@ export default function Finances() {
             color: "var(--text3)"
           }}>
             <span>{filteredInc.length} records</span>
-            <span>Total: <b style={{ color: "var(--accent)" }}>
+            <span>Total: <b style={{ color: "var(--accent)", fontFamily: "var(--font-mono)" }}>
               ₹{incTotal.toLocaleString("en-IN")}
             </b></span>
           </div>
@@ -715,7 +715,7 @@ export default function Finances() {
                     <td style={{ fontFamily: "var(--font-mono)", color: "var(--accent)", fontWeight: 600 }}>
                       ₹{Number(i.amount).toLocaleString("en-IN")}
                     </td>
-                    <td style={{ color: "var(--text3)", fontSize: 12 }}>{i.date}</td>
+                    <td style={{ color: "var(--text3)", fontSize: 12, fontFamily: "var(--font-mono)" }}>{i.date}</td>
                     <td style={{
                       color: "var(--text3)", fontSize: 12, maxWidth: 220,
                       overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap"
@@ -746,7 +746,7 @@ export default function Finances() {
             color: "var(--text3)"
           }}>
             <span>{filteredExp.length} records</span>
-            <span>Total: <b style={{ color: "var(--danger)" }}>
+            <span>Total: <b style={{ color: "var(--danger)", fontFamily: "var(--font-mono)" }}>
               ₹{expTotal.toLocaleString("en-IN")}
             </b></span>
           </div>
@@ -772,7 +772,7 @@ export default function Finances() {
                     <td style={{ fontFamily: "var(--font-mono)", color: "var(--danger)", fontWeight: 600 }}>
                       ₹{Number(e.amount).toLocaleString("en-IN")}
                     </td>
-                    <td style={{ color: "var(--text3)", fontSize: 12 }}>{e.date}</td>
+                    <td style={{ color: "var(--text3)", fontSize: 12, fontFamily: "var(--font-mono)" }}>{e.date}</td>
                     <td style={{ color: "var(--text3)", fontSize: 12 }}>{e.vendor || "—"}</td>
                     <td style={{
                       color: "var(--text3)", fontSize: 12, maxWidth: 180,
@@ -856,9 +856,9 @@ export default function Finances() {
                       <td>
                         <button className="btn btn-sm" style={{
                           fontSize: 11,
-                          background: item.price ? "rgba(168,255,87,.1)" : "var(--surface2)",
+                          background: item.price ? "rgba(249,115,22,.09)" : "var(--surface2)",
                           color: item.price ? "var(--accent)" : "var(--text3)",
-                          border: `1px solid ${item.price ? "rgba(168,255,87,.3)" : "var(--border)"}`,
+                          border: `1px solid ${item.price ? "rgba(249,115,22,.3)" : "var(--border)"}`,
                           cursor: item.price ? "pointer" : "not-allowed",
                           minWidth: 70,
                         }}

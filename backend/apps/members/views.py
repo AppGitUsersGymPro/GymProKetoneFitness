@@ -192,6 +192,19 @@ class MemberViewSet(viewsets.ModelViewSet):
     search_fields    = ["name","phone","email"]
     ordering_fields  = ["name","join_date","renewal_date","status","personal_trainer"]
 
+    def partial_update(self, request, *args, **kwargs):
+        # Photo-only PATCH (FormData with just the file): handle directly from
+        # request.FILES, identical to how create() does it. Avoids any path
+        # through DRF ImageField validation / URL resolution that can silently fail.
+        photo_file = request.FILES.get('photo')
+        if photo_file and not (set(request.data.keys()) - {'photo'}):
+            instance = self.get_object()
+            instance.photo = photo_file
+            instance.save(update_fields=['photo'])
+            serializer = self.get_serializer(instance)
+            return Response(serializer.data)
+        return super().partial_update(request, *args, **kwargs)
+
     def get_queryset(self):
         # Auto-expire members whose renewal date has passed
         _auto_expire_members()
@@ -287,6 +300,10 @@ class MemberViewSet(viewsets.ModelViewSet):
             plan_type=plan_type,
             personal_trainer=d.get("personal_trainer", False),
         )
+        photo = request.FILES.get('photo')
+        if photo:
+            member.photo = photo
+            member.save(update_fields=['photo'])
 
         amount_paid = Decimal(str(d.get("amount_paid", 0)))
         bill_data   = None
@@ -567,19 +584,50 @@ class MemberViewSet(viewsets.ModelViewSet):
     def stats(self, request):
         _auto_expire_members()
         today = timezone.localdate()
+        active_count = Member.objects.filter(status="active").count()
+        today_checkins_count = MemberAttendance.objects.filter(date=today).count()
         return Response({
-            "total":          Member.objects.count(),
-            "active":         Member.objects.filter(status="active").count(),
-            "expired":        Member.objects.filter(status="expired").count(),
-            "cancelled":      Member.objects.filter(status="cancelled").count(),
-            "expiring_7":     Member.objects.filter(
+            "total":            Member.objects.count(),
+            "active":           active_count,
+            "expired":          Member.objects.filter(status="expired").count(),
+            "cancelled":        Member.objects.filter(status="cancelled").count(),
+            "expiring_7":       Member.objects.filter(
                 status="active",
                 renewal_date__lte=today+timedelta(days=7),
                 renewal_date__gte=today).count(),
-            "new_this_month": Member.objects.filter(
+            "new_this_month":   Member.objects.filter(
                 join_date__year=today.year,
                 join_date__month=today.month).count(),
+            "today_checkins":   today_checkins_count,
+            "today_absent":     max(0, active_count - today_checkins_count),
         })
+
+    @action(detail=False, methods=["get"])
+    def today_checkins(self, request):
+        today = timezone.localdate()
+        qs = (MemberAttendance.objects
+              .filter(date=today)
+              .select_related("member")
+              .order_by("-check_in"))
+        data = []
+        for a in qs:
+            m = a.member
+            photo = None
+            if m.photo:
+                try:
+                    photo = request.build_absolute_uri(m.photo.url)
+                except Exception:
+                    pass
+            data.append({
+                "id":        m.id,
+                "name":      m.name,
+                "member_id": m.display_id(),
+                "phone":     m.phone,
+                "check_in":  str(a.check_in) if a.check_in else None,
+                "check_out": str(a.check_out) if a.check_out else None,
+                "photo":     photo or m.photo_url or None,
+            })
+        return Response(data)
 
 
 class MemberPaymentViewSet(viewsets.ModelViewSet):
@@ -632,7 +680,7 @@ class KioskLookupView(APIView):
                     "plan": member.plan.name if member.plan else "No Plan",
                     "status": member.status,
                     "renewal": str(member.renewal_date) if member.renewal_date else None,
-                    "photo": member.photo_url or "",
+                    "photo": (request.build_absolute_uri(member.photo.url) if member.photo else None) or member.photo_url or "",
                 })
             except (ValueError, Member.DoesNotExist):
                 return Response({"detail":f"No member found with ID {raw}."}, status=404)
@@ -647,7 +695,7 @@ class KioskLookupView(APIView):
                     "name": staff.name,
                     "role": staff.role.capitalize(),
                     "shift": staff.shift, "status": staff.status,
-                    "photo": staff.photo_url or "",
+                    "photo": (request.build_absolute_uri(staff.photo.url) if staff.photo else None) or staff.photo_url or "",
                 })
             except (ValueError, StaffMember.DoesNotExist):
                 return Response({"detail":f"No staff found with ID {raw}."}, status=404)
