@@ -4,6 +4,10 @@ from django.utils import timezone
 from datetime import timedelta
 from decimal import Decimal
 
+def _validate_photo_size(f):
+    if f.size > 2 * 1024 * 1024:
+        raise ValidationError("Photo must be under 2 MB.")
+
 class MembershipPlan(models.Model):
     name          = models.CharField(max_length=100)
     duration_days = models.PositiveIntegerField(default=30)
@@ -29,7 +33,8 @@ class Member(models.Model):
     gender        = models.CharField(max_length=10, choices=GENDER, blank=True)
     address      = models.TextField(blank=True)
     photo_url    = models.URLField(blank=True)
-    photo        = models.ImageField(upload_to='members/', null=True, blank=True)
+    photo        = models.ImageField(upload_to='members/', null=True, blank=True,
+                      validators=[_validate_photo_size])
     foodType     = models.CharField(max_length=10, choices=FOODTYPE, default="veg")
     plan         = models.ForeignKey(MembershipPlan, on_delete=models.SET_NULL, null=True, blank=True)
     plan_type     = models.CharField(max_length=20, choices=PLANTYPE, default="basic")

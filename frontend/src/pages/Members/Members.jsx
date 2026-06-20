@@ -517,6 +517,11 @@ function MemberModal({ member, plans, dietPlans: initialDietPlans, onClose, onSa
                   onChange={e => {
                     const f = e.target.files?.[0];
                     if (!f) return;
+                    if (f.size > 2 * 1024 * 1024) {
+                      toast.error("Photo must be under 2 MB.");
+                      e.target.value = "";
+                      return;
+                    }
                     setPhotoFile(f);
                     setPhotoPreview(URL.createObjectURL(f));
                   }}
