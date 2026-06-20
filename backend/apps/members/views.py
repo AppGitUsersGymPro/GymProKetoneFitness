@@ -135,12 +135,13 @@ def _build_bill(member, payment, gym):
         })
 
     diet_amt        = float(payment.diet_plan_amount)
+    reg_fee         = float(payment.registration_fee)
     discount_amt    = float(payment.discount_amount)
     plan_base_price = float(payment.plan.price) if payment.plan else 0.0
-    # plan_price = (plan.price - discount) + pt_fee + diet; derive pt_fee from the difference
-    derived_pt_fee = max(0.0, float(payment.plan_price) - plan_base_price + discount_amt - diet_amt)
+    # plan_price = (plan.price - discount) + pt_fee + diet + reg_fee; derive pt_fee
+    derived_pt_fee = max(0.0, float(payment.plan_price) - plan_base_price + discount_amt - diet_amt - reg_fee)
     # membership_fee = original plan price (before discount) for transparent invoice display
-    membership_fee = plan_base_price if payment.plan else float(payment.plan_price) + discount_amt - diet_amt - derived_pt_fee
+    membership_fee = plan_base_price if payment.plan else float(payment.plan_price) + discount_amt - diet_amt - reg_fee - derived_pt_fee
     return {
         "invoice_number":    payment.invoice_number,
         "member_id":         member.display_id(),
@@ -149,10 +150,11 @@ def _build_bill(member, payment, gym):
         "email":             member.email,
         "plan_name":         payment.plan.name if payment.plan else "",
         "plan_duration":     payment.plan.duration_days if payment.plan else 0,
-        # plan_price is the post-discount combined base (membership - discount + PT + diet)
+        # plan_price is the post-discount combined base (membership - discount + PT + diet + reg_fee)
         "plan_price":        float(payment.plan_price),
         "membership_fee":    membership_fee,
         "discount_amount":   discount_amt,
+        "registration_fee":  reg_fee,
         "pt_fee":            derived_pt_fee,
         "diet_plan_amount":  diet_amt,
         "gst_rate":          float(payment.gst_rate),
@@ -309,10 +311,11 @@ class MemberViewSet(viewsets.ModelViewSet):
         bill_data   = None
 
         if plan:
-            from apps.finances.gst_utils import get_diet_plan_amount as _get_diet_amt
+            from apps.finances.gst_utils import get_diet_plan_amount as _get_diet_amt, get_registration_fee as _get_reg_fee
             diet_amt     = _get_diet_amt() if (diet or plan_type in ("premium", "dietonly-standard")) else Decimal("0")
+            reg_fee      = _get_reg_fee()
             discount_amt = Decimal(str(d.get("discount_amount", 0)))
-            base, gst_amt, total, rate = _calc_gst(plan.price + diet_amt - discount_amt)
+            base, gst_amt, total, rate = _calc_gst(plan.price + diet_amt + reg_fee - discount_amt)
             inv_no = _invoice_number(member.id, join)
 
             payment = MemberPayment.objects.create(
@@ -321,6 +324,7 @@ class MemberViewSet(viewsets.ModelViewSet):
                 invoice_number   = inv_no,
                 plan_price       = base,
                 diet_plan_amount = diet_amt,
+                registration_fee = reg_fee,
                 discount_amount  = discount_amt,
                 gst_rate         = rate,
                 gst_amount       = gst_amt,

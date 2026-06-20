@@ -109,6 +109,8 @@ class MemberPayment(models.Model):
     plan_price       = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     # Diet plan charge included in plan_price (0 when no diet plan)
     diet_plan_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    # One-time registration fee collected only at enrollment (0 for renewals)
+    registration_fee = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     # Discount applied at enrollment/renewal (original plan.price - plan_price)
     discount_amount  = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     # GST fields — computed once at enrollment/renewal

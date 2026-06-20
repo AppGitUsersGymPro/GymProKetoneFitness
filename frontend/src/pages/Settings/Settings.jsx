@@ -13,6 +13,8 @@ const GYM_FIELDS = [
   { key: "GST_RATE",               label: "GST Rate (%)",                 type: "number" },
   { key: "PT_PAYABLE_PERCENT",     label: "PT Payable to Trainer (%)",    type: "number" },
   { key: "DIET_PLAN_AMOUNT",       label: "Diet Plan Amount (₹)",         type: "number" },
+  { key: "REGISTRATION_FEE",      label: "Registration Fee (₹)",         type: "number",
+    hint: "One-time fee charged at enrollment only. Set to 0 to disable." },
   { key: "ADMIN_WHATSAPP_NUMBER",  label: "Admin WhatsApp Number",        type: "text",
     hint: "All admin notifications (daily buy reminder, pending payment summary, etc.) are sent to this number" },
 ];

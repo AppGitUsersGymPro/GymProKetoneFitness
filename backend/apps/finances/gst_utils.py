@@ -28,6 +28,10 @@ def get_diet_plan_amount():
     return Decimal(get_setting("DIET_PLAN_AMOUNT", "0"))
 
 
+def get_registration_fee():
+    return Decimal(get_setting("REGISTRATION_FEE", "0"))
+
+
 def calc_gst(base_price):
     """
     Given a base amount (excluding GST), return (base, gst_amount, total, rate).

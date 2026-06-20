@@ -35,6 +35,7 @@ function MemberModal({ member, plans, dietPlans: initialDietPlans, onClose, onSa
   const [saving, setSaving] = useState(false);
   const [dietBaseAmt, setDietBaseAmt] = useState(0);
   const [gymGstRate, setGymGstRate] = useState(18);
+  const [registrationFee, setRegistrationFee] = useState(0);
   const [discountedPlanBase, setDiscountedPlanBase] = useState("");
   const [photoFile, setPhotoFile] = useState(null);
   const [photoPreview, setPhotoPreview] = useState(isEdit ? (member?.photo || member?.photo_url || null) : null);
@@ -48,6 +49,7 @@ function MemberModal({ member, plans, dietPlans: initialDietPlans, onClose, onSa
       const s = r.data || {};
       if (s.DIET_PLAN_AMOUNT != null) setDietBaseAmt(parseFloat(s.DIET_PLAN_AMOUNT) || 0);
       if (s.GST_RATE != null) { const _r = parseFloat(s.GST_RATE); setGymGstRate(isNaN(_r) ? 18 : _r); }
+      if (!isEdit && s.REGISTRATION_FEE != null) setRegistrationFee(parseFloat(s.REGISTRATION_FEE) || 0);
     }).catch(() => { });
     // Always pull a fresh copy of diet plans when the modal opens
     api.get("/members/diet-plans/").then(r => {
@@ -64,8 +66,11 @@ function MemberModal({ member, plans, dietPlans: initialDietPlans, onClose, onSa
     ? parseFloat((dietBaseAmt * (1 + gymGstRate / 100)).toFixed(2))
     : 0;
   // Recompute plan total from effective (post-discount) base + GST rate
+  // Registration fee is GST-inclusive (same base as plan/diet)
+  const regFeeWithGst = !isEdit && registrationFee > 0
+    ? parseFloat((registrationFee * (1 + gymGstRate / 100)).toFixed(2)) : 0;
   const planWithGst  = effectivePlanBase > 0 ? parseFloat((effectivePlanBase * (1 + gymGstRate / 100)).toFixed(2)) : 0;
-  const enrollTotal  = planWithGst + dietWithGst;
+  const enrollTotal  = planWithGst + dietWithGst + regFeeWithGst;
 
   const handlePlanChange = (id) => {
     set("plan", id);
@@ -411,6 +416,12 @@ function MemberModal({ member, plans, dietPlans: initialDietPlans, onClose, onSa
                     <div style={{ display: "flex", justifyContent: "space-between", color: "var(--teal)", marginBottom: 3 }}>
                       <span>Diet Plan (incl. GST)</span>
                       <span style={{ fontFamily: "var(--font-mono)" }}>+ ₹{dietWithGst.toLocaleString("en-IN", { maximumFractionDigits: 2 })}</span>
+                    </div>
+                  )}
+                  {regFeeWithGst > 0 && (
+                    <div style={{ display: "flex", justifyContent: "space-between", color: "var(--info, #3b82f6)", marginBottom: 3 }}>
+                      <span>Registration Fee (incl. GST)</span>
+                      <span style={{ fontFamily: "var(--font-mono)" }}>+ ₹{regFeeWithGst.toLocaleString("en-IN", { maximumFractionDigits: 2 })}</span>
                     </div>
                   )}
                   <div style={{
@@ -1038,7 +1049,14 @@ function PaymentHistoryModal({ member, onClose, onRefresh, onBill, gymInfo = {} 
                     Billed: <strong style={{ color: "var(--text1)", fontFamily: "var(--font-mono)" }}>
                       ₹{Number(p.total_with_gst || 0).toLocaleString("en-IN")}
                     </strong>
-                    &ensp;|&ensp; Membership: <strong style={{ fontFamily: "var(--font-mono)" }}>₹{(Number(p.plan_price || 0) - Number(p.diet_plan_amount || 0)).toLocaleString("en-IN")}</strong>
+                    &ensp;|&ensp; Membership: <strong style={{ fontFamily: "var(--font-mono)" }}>₹{(Number(p.plan_price || 0) - Number(p.diet_plan_amount || 0) - Number(p.registration_fee || 0)).toLocaleString("en-IN")}</strong>
+                    {Number(p.registration_fee || 0) > 0 && (
+                      <>
+                        &ensp;+&ensp; Reg. Fee: <strong style={{ color: "var(--info, #3b82f6)", fontFamily: "var(--font-mono)" }}>
+                          ₹{Number(p.registration_fee).toLocaleString("en-IN")}
+                        </strong>
+                      </>
+                    )}
                     {Number(p.diet_plan_amount || 0) > 0 && (
                       <>
                         &ensp;+&ensp; Diet: <strong style={{ color: "var(--teal)", fontFamily: "var(--font-mono)" }}>
