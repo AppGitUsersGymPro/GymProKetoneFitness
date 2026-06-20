@@ -90,7 +90,7 @@ function MemberModal({ member, plans, dietPlans: initialDietPlans, onClose, onSa
     set("plan_type", "basic");
     set("personal_trainer", false);
     set("diet", "");
-    if (!isEdit) set("amount_paid", found ? (found.price_with_gst ?? found.price) : "");
+    if (!isEdit) set("amount_paid", found ? (parseFloat(found.price_with_gst ?? found.price) + regFeeWithGst).toFixed(2) : "");
   };
 
   const handlePlanTypeChange = (planType) => {
@@ -103,7 +103,7 @@ function MemberModal({ member, plans, dietPlans: initialDietPlans, onClose, onSa
       const newDietFee = (planType === "premium" || planType === "dietonly-standard")
         ? parseFloat((dietBaseAmt * (1 + gymGstRate / 100)).toFixed(2))
         : 0;
-      set("amount_paid", (planWithGst + newDietFee).toFixed(2));
+      set("amount_paid", (planWithGst + newDietFee + regFeeWithGst).toFixed(2));
     }
   };
 
