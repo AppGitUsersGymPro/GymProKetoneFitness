@@ -59,8 +59,8 @@ export default function Dashboard() {
       <div className="chart-tooltip">
         <div className="chart-tooltip__label">{label}</div>
         {payload.map(p => (
-          <div key={p.name} style={{ color: p.color, fontWeight: 600, fontSize: 12, fontFamily: "var(--font-body)" }}>
-            {p.name}: <span style={{ fontFamily: "var(--font-mono)" }}>₹{fmt(p.value)}</span>
+          <div key={p.name} style={{ color: p.color, fontWeight: 600, fontSize: 12 }}>
+            {p.name}: ₹{fmt(p.value)}
           </div>
         ))}
       </div>
@@ -183,12 +183,12 @@ export default function Dashboard() {
                             : c.name?.[0]?.toUpperCase()}
                         </div>
                         <div>
-                          <div style={{ fontWeight: 600 }}>{c.name}</div>
-                          <div style={{ fontSize: 11, color: "var(--text3)", fontFamily: "var(--font-mono)" }}>{c.member_id}</div>
+                          <div>{c.name}</div>
+                          <div style={{ color: "var(--text3)" }}>{c.member_id}</div>
                         </div>
                       </div>
                     </td>
-                    <td style={{ color: "var(--text3)", fontSize: 12 }}>{c.phone}</td>
+                    <td>{c.phone}</td>
                     <td>
                       <span className="badge badge-green">{c.check_in || "—"}</span>
                     </td>
@@ -220,10 +220,10 @@ export default function Dashboard() {
               <tbody>
                 {expiring.map(m => (
                   <tr key={m.id}>
-                    <td><b>{m.name}</b></td>
-                    <td style={{ color: "var(--text3)" }}>{m.phone}</td>
+                    <td style={{ fontWeight: 600 }}>{m.name}</td>
+                    <td>{m.phone}</td>
                     <td>{m.plan_name || "—"}</td>
-                    <td style={{ color: "var(--warn)", fontFamily: "var(--font-mono)", fontSize: 12 }}>{m.renewal_date}</td>
+                    <td>{m.renewal_date}</td>
                     <td>
                       <span className={`badge ${m.days_until_expiry <= 2 ? "badge-red" : "badge-yellow"}`}>
                         {m.days_until_expiry}d

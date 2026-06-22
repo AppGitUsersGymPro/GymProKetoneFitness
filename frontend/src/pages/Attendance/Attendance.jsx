@@ -161,10 +161,8 @@ export default function Attendance() {
         ].map(c => (
           <div key={c.label} className="stat-card" style={{ minWidth: 0 }}>
             <div className="label">{c.label}</div>
-            <div className="value" style={{ color: c.color, fontSize: 26 }}>{c.val}</div>
-            {c.sub && (
-              <div className="sub" style={{ color: c.color, opacity: .8 }}>{c.sub}</div>
-            )}
+            <div className="value">{c.val}</div>
+            {c.sub && <div className="sub">{c.sub}</div>}
           </div>
         ))}
       </div>
@@ -220,32 +218,21 @@ export default function Attendance() {
               </tr></thead>
               <tbody>
                 {loading ? (
-                  <tr><td colSpan={6} style={{ textAlign: "center", padding: 24, color: "var(--text3)" }}>Loading…</td></tr>
+                  <tr><td colSpan={6} style={{ textAlign: "center", padding: 24 }}>Loading…</td></tr>
                 ) : mData.length === 0 ? (
-                  <tr><td colSpan={6} style={{ textAlign: "center", padding: 24, color: "var(--text3)" }}>No records</td></tr>
+                  <tr><td colSpan={6} style={{ textAlign: "center", padding: 24 }}>No records</td></tr>
                 ) : mData.map(a => (
                   <tr key={a.id}>
-                    <td>
-                      <span style={{
-                        fontFamily: "var(--font-mono)", fontSize: 12,
-                        color: "var(--accent)", fontWeight: 600
-                      }}>
-                        {a.member_display_id}
-                      </span>
-                    </td>
-                    <td><b>{a.member_name}</b></td>
-                    <td style={{ fontSize: 12, color: "var(--text3)" }}>{a.date}</td>
+                    <td>{a.member_display_id}</td>
+                    <td>{a.member_name}</td>
+                    <td>{a.date}</td>
                     <td>
                       <span className={`badge ${a.check_in ? "badge-green" : "badge-red"}`}>
                         {a.check_in ? "Present" : "Absent"}
                       </span>
                     </td>
-                    <td style={{ fontFamily: "var(--font-mono)", fontSize: 12, color: "var(--teal)" }}>
-                      {fmt_time(a.check_in)}
-                    </td>
-                    <td style={{ fontFamily: "var(--font-mono)", fontSize: 12, color: "var(--text2)" }}>
-                      {a.check_out ? fmt_time(a.check_out) : <span style={{ color: "var(--text3)" }}>—</span>}
-                    </td>
+                    <td>{fmt_time(a.check_in)}</td>
+                    <td>{a.check_out ? fmt_time(a.check_out) : "—"}</td>
                   </tr>
                 ))}
               </tbody>
@@ -287,7 +274,7 @@ export default function Attendance() {
                       {a.check_out ? ` · Out: ${fmt_time(a.check_out)}` : ""}
                     </span>
                     {(wkFmt || lateFmt || otFmt) && (
-                      <span className="mobile-card__meta" style={{ color: "var(--text2)" }}>
+                      <span className="mobile-card__meta">
                         {wkFmt ? `Worked: ${wkFmt}` : (a.check_in && !a.check_out ? "In progress" : "")}
                         {lateFmt ? ` · Late +${lateFmt}` : ""}
                         {otFmt ? ` · OT +${otFmt}` : ""}
@@ -316,9 +303,9 @@ export default function Attendance() {
               </tr></thead>
               <tbody>
                 {loading ? (
-                  <tr><td colSpan={8} style={{ textAlign: "center", padding: 24, color: "var(--text3)" }}>Loading…</td></tr>
+                  <tr><td colSpan={8} style={{ textAlign: "center", padding: 24 }}>Loading…</td></tr>
                 ) : sData.length === 0 ? (
-                  <tr><td colSpan={8} style={{ textAlign: "center", padding: 24, color: "var(--text3)" }}>No records</td></tr>
+                  <tr><td colSpan={8} style={{ textAlign: "center", padding: 24 }}>No records</td></tr>
                 ) : sData.map(a => {
                   const lateFmt = fmt_mins(a.late_minutes);
                   const otFmt = fmt_mins(a.overtime_minutes);
@@ -327,54 +314,43 @@ export default function Attendance() {
 
                   return (
                     <tr key={a.id}>
-                      <td><b>{a.staff_name}</b></td>
-                      <td style={{ fontSize: 12, color: "var(--text3)" }}>{a.date}</td>
+                      <td>{a.staff_name}</td>
+                      <td>{a.date}</td>
                       <td>
                         <span className={`badge ${sm.cls}`}>{sm.label}</span>
                       </td>
-                      <td style={{ fontFamily: "var(--font-mono)", fontSize: 12, color: "var(--teal)" }}>
-                        {fmt_time(a.check_in)}
-                      </td>
-                      <td style={{ fontFamily: "var(--font-mono)", fontSize: 12, color: "var(--text2)" }}>
-                        {a.check_out
-                          ? fmt_time(a.check_out)
-                          : <span style={{ color: "var(--text3)" }}>—</span>}
-                      </td>
+                      <td>{fmt_time(a.check_in)}</td>
+                      <td>{a.check_out ? fmt_time(a.check_out) : "—"}</td>
                       {/* Worked hours */}
-                      <td style={{
-                        fontFamily: "var(--font-mono)", fontSize: 12,
-                        color: wkFmt ? "var(--text1)" : "var(--text3)"
-                      }}>
-                        {wkFmt || (a.check_in && !a.check_out
-                          ? <span style={{ color: "var(--teal)", fontSize: 11 }}>In progress</span>
-                          : "—")}
+                      <td>
+                        {wkFmt || (a.check_in && !a.check_out ? "In progress" : "—")}
                       </td>
                       {/* Late */}
                       <td>
                         {lateFmt ? (
                           <span style={{
-                            fontSize: 11, fontWeight: 700, color: "#f97316",
+                            color: "#f97316",
                             background: "rgba(249,115,22,.12)",
                             padding: "2px 7px", borderRadius: 5,
                           }}>
                             +{lateFmt}
                           </span>
                         ) : (
-                          <span style={{ color: "var(--text3)", fontSize: 12 }}>—</span>
+                          <span>—</span>
                         )}
                       </td>
                       {/* Overtime */}
                       <td>
                         {otFmt ? (
                           <span style={{
-                            fontSize: 11, fontWeight: 700, color: "#3b82f6",
+                            color: "#3b82f6",
                             background: "rgba(59,130,246,.12)",
                             padding: "2px 7px", borderRadius: 5,
                           }}>
                             +{otFmt}
                           </span>
                         ) : (
-                          <span style={{ color: "var(--text3)", fontSize: 12 }}>—</span>
+                          <span>—</span>
                         )}
                       </td>
                     </tr>

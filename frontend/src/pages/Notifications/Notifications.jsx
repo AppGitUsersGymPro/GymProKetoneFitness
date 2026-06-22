@@ -165,19 +165,19 @@ export default function Notifications() {
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={6} style={{ textAlign: "center", padding: 32, color: "var(--text3)" }}>Loading…</td></tr>
+                <tr><td colSpan={6} style={{ textAlign: "center", padding: 32 }}>Loading…</td></tr>
               ) : list.length === 0 ? (
-                <tr><td colSpan={6} style={{ textAlign: "center", padding: 32, color: "var(--text3)" }}>No notifications yet</td></tr>
+                <tr><td colSpan={6} style={{ textAlign: "center", padding: 32 }}>No notifications yet</td></tr>
               ) : list.map(n => (
                 <tr key={n.id}>
                   <td>
-                    <div style={{ fontWeight: 600 }}>{n.recipient_name}</div>
-                    <div style={{ fontSize: 11, color: "var(--text3)" }}>{n.recipient_phone}</div>
+                    <div>{n.recipient_name}</div>
+                    <div>{n.recipient_phone}</div>
                   </td>
-                  <td><span style={{ fontSize: 12, color: "var(--text2)" }}>{fmtTrigger(n.trigger_type)}</span></td>
+                  <td>{fmtTrigger(n.trigger_type)}</td>
                   <td><span className={`badge ${channelColor[n.channel] || "badge-gray"}`}>{n.channel}</span></td>
                   <td><span className={`badge ${statusColor[n.status] || "badge-gray"}`}>{n.status}</span></td>
-                  <td style={{ color: "var(--text3)", fontSize: 11, whiteSpace: "nowrap" }}>
+                  <td style={{ whiteSpace: "nowrap" }}>
                     {n.sent_at ? new Date(n.sent_at).toLocaleString("en-IN") : "—"}
                   </td>
                   {/* Full message — wraps, no truncation */}
@@ -190,7 +190,7 @@ export default function Notifications() {
 
         {/* ── Pagination ── */}
         <div className="members-pagination" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 18px", borderTop: "1px solid var(--border)" }}>
-          <span style={{ fontSize: 12, color: "var(--text3)" }}>{count} total</span>
+          <span style={{ fontSize: 12 }}>{count} total</span>
           <div style={{ display: "flex", gap: 6 }}>
             <button className="btn btn-sm btn-secondary" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>← Prev</button>
             <button className="btn btn-sm btn-secondary" disabled={list.length < 20} onClick={() => setPage(p => p + 1)}>Next →</button>

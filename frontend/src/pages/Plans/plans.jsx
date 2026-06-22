@@ -243,7 +243,7 @@ export default function Plans() {
               </div>
 
               <div className="plan-card__duration">
-                <span style={{ color: "var(--accent)" }}>◷</span>
+                <span>◷</span>
                 {p.duration_days} days
                 <span className="plan-card__duration-note">
                   &nbsp;(

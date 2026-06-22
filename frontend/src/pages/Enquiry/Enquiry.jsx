@@ -187,7 +187,7 @@ export default function Enquiry() {
               <div key={e.id} className="mobile-card">
                 <div className="mobile-card__left">
                   <span className="mobile-card__title">{e.name}</span>
-                  <span className="mobile-card__meta" style={{ fontFamily: "var(--font-mono)" }}>
+                  <span className="mobile-card__meta">
                     {e.phone}
                   </span>
                   {e.email && <span className="mobile-card__meta">{e.email}</span>}
@@ -246,26 +246,26 @@ export default function Enquiry() {
                 const s = STATUS_LABELS[e.status] || STATUS_LABELS.followup;
                 return (
                   <tr key={e.id}>
-                    <td style={{ color: "var(--text-muted)", fontSize: 12 }}>{idx + 1}</td>
-                    <td style={{ fontWeight: 600 }}>{e.name}</td>
-                    <td style={{ fontFamily: "var(--font-mono)" }}>{e.phone}</td>
-                    <td style={{ fontSize: 12, color: "var(--text-muted)" }}>{e.email || "—"}</td>
+                    <td>{idx + 1}</td>
+                    <td>{e.name}</td>
+                    <td>{e.phone}</td>
+                    <td>{e.email || "—"}</td>
                     <td><span className={`badge ${s.cls}`}>{s.label}</span></td>
                     <td>
                       <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                        <span style={{ fontSize: 12 }}>
+                        <span>
                           Sent: <strong>{e.followups_sent}</strong> / Pending: <strong>{e.followups_pending}</strong>
                         </span>
-                        <span style={{ fontSize: 11, color: "var(--text-muted)" }}>
+                        <span style={{ color: "var(--text-muted)" }}>
                           (every 3 days × 10)
                         </span>
                       </div>
                     </td>
-                    <td style={{ fontSize: 12, whiteSpace: "nowrap" }}>
+                    <td style={{ whiteSpace: "nowrap" }}>
                       {new Date(e.created_at).toLocaleDateString("en-IN")}
                     </td>
                     <td style={{
-                      maxWidth: 180, fontSize: 12, color: "var(--text-muted)",
+                      maxWidth: 180, color: "var(--text-muted)",
                       overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap"
                     }}>
                       {e.notes || "—"}

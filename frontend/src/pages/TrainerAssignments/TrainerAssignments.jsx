@@ -195,7 +195,7 @@ function PTRenewalModal({ assignment, onClose, onSave }) {
         <div className="modal-title">Renew Personal Training</div>
 
         {loadingPreview ? (
-          <div style={{ textAlign: "center", padding: 32, color: "var(--text-muted)" }}>Loading…</div>
+          <div style={{ textAlign: "center", padding: 32, color: "var(--text1)" }}>Loading…</div>
         ) : !preview?.can_renew ? (
           <>
             <div style={{
@@ -221,16 +221,16 @@ function PTRenewalModal({ assignment, onClose, onSave }) {
             {/* Summary */}
             <div style={{ background: "var(--card-bg)", border: "1px solid var(--border)", borderRadius: 8, padding: "12px 14px", marginBottom: 16, fontSize: 13 }}>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-                <span style={{ color: "var(--text2)" }}>Total Amount</span>
+                <span style={{ color: "var(--text1)" }}>Total Amount</span>
                 <span style={{ fontWeight: 700 }}>₹{fmt(bill.total_amount)}</span>
               </div>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-                <span style={{ color: "var(--text2)" }}>Amount Paid</span>
+                <span style={{ color: "var(--text1)" }}>Amount Paid</span>
                 <span style={{ fontWeight: 700, color: "var(--accent)" }}>₹{fmt(bill.amount_paid)}</span>
               </div>
               {parseFloat(bill.balance) > 0 && (
                 <div style={{ display: "flex", justifyContent: "space-between" }}>
-                  <span style={{ color: "var(--text2)" }}>Balance Due</span>
+                  <span style={{ color: "var(--text1)" }}>Balance Due</span>
                   <span style={{ fontWeight: 700, color: "#e05555" }}>₹{fmt(bill.balance)}</span>
                 </div>
               )}
@@ -250,9 +250,9 @@ function PTRenewalModal({ assignment, onClose, onSave }) {
             <div style={{ background: "var(--card-bg)", border: "1px solid var(--border)", borderRadius: 8, padding: "10px 14px", fontSize: 13 }}>
               <div style={{ fontWeight: 600, color: "var(--text1)", marginBottom: 4 }}>
                 {preview.member_name}
-                <span style={{ fontSize: 11, marginLeft: 8, color: "var(--text-muted)", fontFamily: "var(--font-mono)" }}>{preview.member_id}</span>
+                <span style={{ fontSize: 11, marginLeft: 8, color: "var(--text1)", fontFamily: "var(--font-body)" }}>{preview.member_id}</span>
               </div>
-              <div style={{ color: "var(--text2)", fontSize: 12, lineHeight: 1.7 }}>
+              <div style={{ color: "var(--text1)", fontSize: 12, lineHeight: 1.7 }}>
                 {preview.member_phone && <span>{preview.member_phone} &nbsp;·&nbsp; </span>}
                 Trainer: <strong>{preview.trainer_name}</strong><br />
                 Plan: <strong>{preview.plan_name || "—"}</strong> &nbsp;·&nbsp; Valid till: <strong>{preview.plan_valid_to}</strong>
@@ -262,7 +262,7 @@ function PTRenewalModal({ assignment, onClose, onSave }) {
             {/* PT period */}
             <div style={{ background: "rgba(100,160,255,.07)", border: "1px solid rgba(100,160,255,.2)", borderRadius: 8, padding: "10px 14px", fontSize: 13 }}>
               <div style={{ fontWeight: 600, color: "var(--text1)", marginBottom: 6 }}>PT Period</div>
-              <div style={{ color: "var(--text2)", lineHeight: 1.8 }}>
+              <div style={{ color: "var(--text1)", lineHeight: 1.8 }}>
                 {preview.pt_start_date} &rarr; {preview.pt_end_date}
                 <span style={{
                   marginLeft: 8, background: "var(--accent)", color: "#fff",
@@ -286,20 +286,20 @@ function PTRenewalModal({ assignment, onClose, onSave }) {
             {/* Amount breakdown */}
             <div style={{ background: "var(--card-bg)", border: "1px solid var(--border)", borderRadius: 8, padding: "12px 14px", fontSize: 13 }}>
               <div style={{ fontWeight: 600, color: "var(--text1)", marginBottom: 8 }}>Amount Breakdown</div>
-              <div style={{ display: "flex", justifyContent: "space-between", color: "var(--text2)", marginBottom: 4 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", color: "var(--text1)", marginBottom: 4 }}>
                 <span>PT Base Fee ({preview.pt_days} days)</span>
-                <span style={{ fontFamily: "var(--font-mono)" }}>₹{fmt(preview.base_amount)}</span>
+                <span style={{ fontFamily: "var(--font-body)" }}>₹{fmt(preview.base_amount)}</span>
               </div>
-              <div style={{ display: "flex", justifyContent: "space-between", color: "var(--text2)", marginBottom: 4 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", color: "var(--text1)", marginBottom: 4 }}>
                 <span>GST ({preview.gst_rate}%)</span>
-                <span style={{ fontFamily: "var(--font-mono)", color: "#e09020" }}>₹{fmt(preview.gst_amount)}</span>
+                <span style={{ fontFamily: "var(--font-body)", color: "#e09020" }}>₹{fmt(preview.gst_amount)}</span>
               </div>
               <div style={{
                 display: "flex", justifyContent: "space-between", fontWeight: 700, color: "var(--accent)",
                 borderTop: "1px solid var(--border)", paddingTop: 8, marginTop: 4,
               }}>
                 <span>Total</span>
-                <span style={{ fontFamily: "var(--font-mono)" }}>₹{fmt(preview.total_amount)}</span>
+                <span style={{ fontFamily: "var(--font-body)" }}>₹{fmt(preview.total_amount)}</span>
               </div>
             </div>
 
@@ -333,7 +333,7 @@ function PTRenewalModal({ assignment, onClose, onSave }) {
               <input className="form-input" value={notes} onChange={e => setNotes(e.target.value)} placeholder="Optional note" />
             </div>
 
-            <div style={{ fontSize: 11, color: "var(--text3)" }}>
+            <div style={{ fontSize: 11, color: "var(--text1)" }}>
               Leave amount as 0 to record the renewal now and collect payment later.
             </div>
 
@@ -701,7 +701,7 @@ function AssignmentModal({ assignment, allMembers, trainers, plans, onClose, onS
             marginBottom: 14, fontSize: 13,
           }}>
             Renewing <strong>{selectedMemberObj.name}</strong> with plan upgrade — assign a trainer to complete renewal.
-            <br /><span style={{ fontSize: 11, color: "var(--text-muted)" }}>Cancelling will discard the renewal.</span>
+            <br /><span style={{ fontSize: 11, color: "var(--text1)" }}>Cancelling will discard the renewal.</span>
           </div>
         )}
 
@@ -722,7 +722,7 @@ function AssignmentModal({ assignment, allMembers, trainers, plans, onClose, onS
             <label className="form-label">
               Member *
               {!isEdit && !pendingMember && (
-                <span style={{ fontSize: 11, color: "var(--text-muted)", marginLeft: 6 }}>
+                <span style={{ fontSize: 11, color: "var(--text1)", marginLeft: 6 }}>
                   (Standard / Premium plans only)
                 </span>
               )}
@@ -732,7 +732,7 @@ function AssignmentModal({ assignment, allMembers, trainers, plans, onClose, onS
             ) : pendingMember ? (
               <div style={{ background: "var(--card-bg)", border: "1px solid var(--border)", borderRadius: 8, padding: "10px 14px", fontSize: 13 }}>
                 <div style={{ fontWeight: 600, color: "var(--text1)" }}>{pendingMember.name}</div>
-                <div style={{ color: "var(--text-muted)", fontSize: 12, marginTop: 2 }}>
+                <div style={{ color: "var(--text1)", fontSize: 12, marginTop: 2 }}>
                   {pendingMember.phone}
                   {memberPlan ? ` · ${memberPlan.name}` : ""}
                   {" · "}<span style={{ textTransform: "capitalize" }}>{pendingMember.plan_type}</span>
@@ -741,7 +741,7 @@ function AssignmentModal({ assignment, allMembers, trainers, plans, onClose, onS
             ) : renewMemberId && selectedMemberObj ? (
               <div style={{ background: "var(--card-bg)", border: "1px solid var(--border)", borderRadius: 8, padding: "10px 14px", fontSize: 13 }}>
                 <div style={{ fontWeight: 600, color: "var(--text1)" }}>{selectedMemberObj.name}</div>
-                <div style={{ color: "var(--text-muted)", fontSize: 12, marginTop: 2 }}>
+                <div style={{ color: "var(--text1)", fontSize: 12, marginTop: 2 }}>
                   {selectedMemberObj.phone}
                   {memberPlan ? ` · ${memberPlan.name}` : ""}
                   {" · Upgrading to "}<span style={{ textTransform: "capitalize" }}>{pendingRenewal?.plan_type || "standard"}</span>
@@ -767,7 +767,7 @@ function AssignmentModal({ assignment, allMembers, trainers, plans, onClose, onS
               ))}
             </select>
             {trainers.length === 0 && (
-              <span style={{ fontSize: 11, color: "var(--text-muted)" }}>No active trainers found.</span>
+              <span style={{ fontSize: 11, color: "var(--text1)" }}>No active trainers found.</span>
             )}
           </div>
 
@@ -775,7 +775,7 @@ function AssignmentModal({ assignment, allMembers, trainers, plans, onClose, onS
           <div className="form-group">
             <label className="form-label">
               Plan
-              <span style={{ fontSize: 11, color: "var(--text-muted)", marginLeft: 6 }}>(Standard / Premium with PT)</span>
+              <span style={{ fontSize: 11, color: "var(--text1)", marginLeft: 6 }}>(Standard / Premium with PT)</span>
             </label>
             <select className="form-input" value={form.plan} onChange={e => set("plan", e.target.value)}>
               <option value="">— No specific plan —</option>
@@ -821,7 +821,7 @@ function AssignmentModal({ assignment, allMembers, trainers, plans, onClose, onS
           {/* PT Period — edit only */}
           {isEdit && (
             <div style={{ borderTop: "1px solid var(--border)", paddingTop: 14 }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: "var(--text2)", marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.5px" }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: "var(--text1)", marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.5px" }}>
                 PT Period Override
               </div>
               <div className="grid-2">
@@ -845,14 +845,14 @@ function AssignmentModal({ assignment, allMembers, trainers, plans, onClose, onS
                 </div>
               </div>
               {form.pt_start_date && form.pt_end_date && (
-                <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 2 }}>
+                <div style={{ fontSize: 11, color: "var(--text1)", marginTop: 2 }}>
                   {(() => {
                     const days = Math.ceil((new Date(form.pt_end_date) - new Date(form.pt_start_date)) / 86400000);
                     return days > 0 ? `${days} day${days !== 1 ? "s" : ""} PT period` : "End must be after start";
                   })()}
                 </div>
               )}
-              <div style={{ fontSize: 11, color: "var(--text3)", marginTop: 4 }}>
+              <div style={{ fontSize: 11, color: "var(--text1)", marginTop: 4 }}>
                 Use this to manually adjust the PT expiry for testing or corrections.
               </div>
             </div>
@@ -867,45 +867,45 @@ function AssignmentModal({ assignment, allMembers, trainers, plans, onClose, onS
               {/* Plan amount — only for new enrollment / renewal, not for edit upgrades */}
               {!isEditUpgrade && (pendingDiscountAmt > 0 ? (
                 <>
-                  <div style={{ display: "flex", justifyContent: "space-between", color: "var(--text2)", marginBottom: 4 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", color: "var(--text1)", marginBottom: 4 }}>
                     <span>Plan Price (Original)</span>
-                    <span style={{ fontFamily: "var(--font-mono)" }}>₹{fmtD(parseFloat((planBasePrice * (1 + gymGstRate / 100)).toFixed(2)))}</span>
+                    <span style={{ fontFamily: "var(--font-body)" }}>₹{fmtD(parseFloat((planBasePrice * (1 + gymGstRate / 100)).toFixed(2)))}</span>
                   </div>
                   <div style={{ display: "flex", justifyContent: "space-between", color: "var(--accent)", marginBottom: 4 }}>
                     <span>Discount</span>
-                    <span style={{ fontFamily: "var(--font-mono)" }}>- ₹{fmtD(pendingDiscountAmt)}</span>
+                    <span style={{ fontFamily: "var(--font-body)" }}>- ₹{fmtD(pendingDiscountAmt)}</span>
                   </div>
                   <div style={{ display: "flex", justifyContent: "space-between", color: "var(--text1)", fontWeight: 700, marginBottom: 4, borderTop: "1px dashed var(--border)", paddingTop: 6 }}>
                     <span>Plan after Discount (incl. GST)</span>
-                    <span style={{ fontFamily: "var(--font-mono)" }}>₹{fmtD(planWithGst)}</span>
+                    <span style={{ fontFamily: "var(--font-body)" }}>₹{fmtD(planWithGst)}</span>
                   </div>
                 </>
               ) : (
-                <div style={{ display: "flex", justifyContent: "space-between", color: "var(--text2)", marginBottom: 4 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", color: "var(--text1)", marginBottom: 4 }}>
                   <span>Plan (incl. GST)</span>
-                  <span style={{ fontFamily: "var(--font-mono)" }}>₹{fmtD(planWithGst)}</span>
+                  <span style={{ fontFamily: "var(--font-body)" }}>₹{fmtD(planWithGst)}</span>
                 </div>
               ))}
               {ptFee > 0 && (
                 <>
-                  <div style={{ display: "flex", justifyContent: "space-between", color: "var(--text2)", marginBottom: 4 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", color: "var(--text1)", marginBottom: 4 }}>
                     <span>Personal Trainer Fee (base{ptDays < 30 ? `, ${ptDays} days` : ""})</span>
-                    <span style={{ fontFamily: "var(--font-mono)" }}>₹{fmtD(proratedPtFee)}</span>
+                    <span style={{ fontFamily: "var(--font-body)" }}>₹{fmtD(proratedPtFee)}</span>
                   </div>
-                  <div style={{ display: "flex", justifyContent: "space-between", color: "var(--text2)", marginBottom: 4 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", color: "var(--text1)", marginBottom: 4 }}>
                     <span>GST on PT Fee ({gymGstRate}%)</span>
-                    <span style={{ fontFamily: "var(--font-mono)" }}>₹{fmtD(ptFeeGst)}</span>
+                    <span style={{ fontFamily: "var(--font-body)" }}>₹{fmtD(ptFeeGst)}</span>
                   </div>
-                  <div style={{ display: "flex", justifyContent: "space-between", color: "var(--text2)", marginBottom: 4 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", color: "var(--text1)", marginBottom: 4 }}>
                     <span>Personal Trainer Fee (incl. GST)</span>
-                    <span style={{ fontFamily: "var(--font-mono)" }}>₹{fmtD(ptFeeWithGst)}</span>
+                    <span style={{ fontFamily: "var(--font-body)" }}>₹{fmtD(ptFeeWithGst)}</span>
                   </div>
                 </>
               )}
               {dietWithGst > 0 && (
                 <div style={{ display: "flex", justifyContent: "space-between", color: "var(--teal)", marginBottom: 4 }}>
                   <span>Diet Plan (incl. GST{ptDays < 30 ? `, ${ptDays} days` : ""}{(pendingMember || pendingRenewal) ? " — collected at enrollment" : ""})</span>
-                  <span style={{ fontFamily: "var(--font-mono)" }}>₹{fmtD(dietWithGst)}</span>
+                  <span style={{ fontFamily: "var(--font-body)" }}>₹{fmtD(dietWithGst)}</span>
                 </div>
               )}
               <div style={{
@@ -914,10 +914,10 @@ function AssignmentModal({ assignment, allMembers, trainers, plans, onClose, onS
                 borderTop: "1px solid var(--border)", paddingTop: 8, marginTop: 4,
               }}>
                 <span>{isEditUpgrade ? "Total to Collect" : "Grand Total"}</span>
-                <span style={{ fontFamily: "var(--font-mono)" }}>₹{fmtD(grandTotal)}</span>
+                <span style={{ fontFamily: "var(--font-body)" }}>₹{fmtD(grandTotal)}</span>
               </div>
               {ptFee === 0 && (
-                <div style={{ fontSize: 11, color: "var(--text3)", marginTop: 6 }}>
+                <div style={{ fontSize: 11, color: "var(--text1)", marginTop: 6 }}>
                   This trainer has no PT fee set. Add one in Staff settings.
                 </div>
               )}
@@ -932,19 +932,19 @@ function AssignmentModal({ assignment, allMembers, trainers, plans, onClose, onS
                         : "Collect PT Fee Now"}
                   </div>
                   {isEditUpgrade && dietWithGst > 0 && (
-                    <div style={{ fontSize: 11, color: "var(--text3)", marginBottom: 8 }}>
+                    <div style={{ fontSize: 11, color: "var(--text1)", marginBottom: 8 }}>
                       PT ₹{fmtD(ptFeeWithGst)} + Diet ₹{fmtD(dietWithGst)} = ₹{fmtD(feesToCollect)}
                     </div>
                   )}
                   <div style={{ display: "flex", gap: 8 }}>
                     <div style={{ flex: 1 }}>
-                      <label style={{ fontSize: 11, color: "var(--text3)", display: "block", marginBottom: 4 }}>Amount (₹)</label>
+                      <label style={{ fontSize: 11, color: "var(--text1)", display: "block", marginBottom: 4 }}>Amount (₹)</label>
                       <input className="form-input" type="number" onWheel={e => e.target.blur()} min="0" max={feesToCollect}
                         value={ptAmountToCollect} onChange={e => setPtAmountToCollect(e.target.value)}
                         placeholder="0 to collect later" />
                     </div>
                     <div style={{ flex: 1 }}>
-                      <label style={{ fontSize: 11, color: "var(--text3)", display: "block", marginBottom: 4 }}>Mode</label>
+                      <label style={{ fontSize: 11, color: "var(--text1)", display: "block", marginBottom: 4 }}>Mode</label>
                       <select className="form-input" value={modeOfPayment} onChange={e => setModeOfPayment(e.target.value)}>
                         <option value="cash">Cash</option>
                         <option value="card">Card</option>
@@ -953,7 +953,7 @@ function AssignmentModal({ assignment, allMembers, trainers, plans, onClose, onS
                       </select>
                     </div>
                   </div>
-                  <div style={{ fontSize: 11, color: "var(--text3)", marginTop: 4 }}>Leave 0 to collect later via Payments.</div>
+                  <div style={{ fontSize: 11, color: "var(--text1)", marginTop: 4 }}>Leave 0 to collect later via Payments.</div>
                 </div>
               )}
             </div>
@@ -1003,10 +1003,10 @@ function PTBalanceModal({ assignment, onClose, onSave }) {
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal" style={{ maxWidth: 420 }} onClick={e => e.stopPropagation()}>
         <div className="modal-title">Pay PT Renewal Balance</div>
-        <div style={{ fontSize: 13, color: "var(--text2)", marginBottom: 16 }}>
+        <div style={{ fontSize: 13, color: "var(--text1)", marginBottom: 16 }}>
           Outstanding balance: <strong style={{ color: "#e05555" }}>₹{fmt(balance)}</strong>
           {assignment.pending_pt_balance_invoice && (
-            <span style={{ marginLeft: 8, fontSize: 11, color: "var(--text-muted)", fontFamily: "var(--font-mono)" }}>
+            <span style={{ marginLeft: 8, fontSize: 11, color: "var(--text1)", fontFamily: "var(--font-body)" }}>
               ({assignment.pending_pt_balance_invoice})
             </span>
           )}
@@ -1060,7 +1060,7 @@ function PTStatusBadge({ assignment }) {
   if (days === null || days === undefined) {
     // No PT dates yet (legacy assignment)
     return (
-      <span style={{ color: "var(--text-muted)", fontSize: 11 }}>—</span>
+      <span style={{ color: "var(--text1)", fontSize: 11 }}>—</span>
     );
   }
 
@@ -1072,7 +1072,7 @@ function PTStatusBadge({ assignment }) {
         <span style={{ fontSize: 11, color: urgency, fontWeight: days <= 5 ? 700 : 400 }}>
           {days} day{days !== 1 ? "s" : ""} left
         </span>
-        <span style={{ fontSize: 10, color: "var(--text-muted)" }}>
+        <span style={{ fontSize: 10, color: "var(--text1)" }}>
           Expires: {assignment.pt_end_date}
         </span>
       </div>
@@ -1086,7 +1086,7 @@ function PTStatusBadge({ assignment }) {
       <span className="badge badge-red" style={{ fontSize: 11 }}>
         {canRenew ? "PT Expired" : "PT Expired"}
       </span>
-      <span style={{ fontSize: 11, color: "var(--text-muted)" }}>
+      <span style={{ fontSize: 11, color: "var(--text1)" }}>
         {expiredDays} day{expiredDays !== 1 ? "s" : ""} ago
       </span>
     </div>
@@ -1274,11 +1274,11 @@ export default function TrainerAssignments() {
 
       {/* Info pills */}
       <div style={{ display: "flex", gap: 12, marginBottom: 16, flexWrap: "wrap", alignItems: "center" }}>
-        <span style={{ fontSize: 13, color: "var(--text-muted)", background: "var(--card-bg)", border: "1px solid var(--border)", borderRadius: 8, padding: "4px 12px" }}>
+        <span style={{ fontSize: 13, color: "var(--text1)", background: "var(--card-bg)", border: "1px solid var(--border)", borderRadius: 8, padding: "4px 12px" }}>
           {eligibleMembers.length} eligible member{eligibleMembers.length !== 1 ? "s" : ""}
-          <span style={{ marginLeft: 4, color: "var(--text-muted)", fontSize: 11 }}>(Standard / Premium + PT)</span>
+          <span style={{ marginLeft: 4, color: "var(--text1)", fontSize: 11 }}>(Standard / Premium + PT)</span>
         </span>
-        <span style={{ fontSize: 13, color: "var(--text-muted)", background: "var(--card-bg)", border: "1px solid var(--border)", borderRadius: 8, padding: "4px 12px" }}>
+        <span style={{ fontSize: 13, color: "var(--text1)", background: "var(--card-bg)", border: "1px solid var(--border)", borderRadius: 8, padding: "4px 12px" }}>
           {trainers.length} active trainer{trainers.length !== 1 ? "s" : ""}
         </span>
       </div>
@@ -1339,13 +1339,13 @@ export default function TrainerAssignments() {
                     <PTStatusBadge assignment={a} />
                   </div>
                   {ptAmt > 0 && (
-                    <span className="mobile-card__meta" style={{ color: "var(--text2)" }}>
+                    <span className="mobile-card__meta" style={{ color: "var(--text1)" }}>
                       Member PT: ₹{memberPaid.toLocaleString("en-IN")} / ₹{ptAmt.toLocaleString("en-IN")}
                       {memberCoveredPT ? " ✓" : ""}
                     </span>
                   )}
                   {pendingRenewalTrainer > 0 && (
-                    <span className="mobile-card__meta" style={{ color: "var(--text2)" }}>
+                    <span className="mobile-card__meta" style={{ color: "var(--text1)" }}>
                       Renewal: ₹{renewalMemberPaid.toLocaleString("en-IN")} / ₹{pendingRenewalTrainer.toLocaleString("en-IN")}
                     </span>
                   )}
@@ -1437,7 +1437,7 @@ export default function TrainerAssignments() {
                         {a.member_name}
                       </div>
                       {a.member_plan_expiry && (
-                        <div style={{ fontSize: 10, color: "var(--text-muted)", marginTop: 2 }}>
+                        <div style={{ color: "var(--text1)", marginTop: 2 }}>
                           Plan till: {a.member_plan_expiry}
                         </div>
                       )}
@@ -1446,7 +1446,7 @@ export default function TrainerAssignments() {
                     <td>
                       {a.plan_name
                         ? <span className="badge badge-green">{a.plan_name}</span>
-                        : <span style={{ color: "var(--text-muted)", fontSize: 12 }}>—</span>}
+                        : <span style={{ color: "var(--text1)" }}>—</span>}
                     </td>
 
                     <td>
@@ -1489,7 +1489,7 @@ export default function TrainerAssignments() {
                           </button>
                         ) : (
                           <span
-                            style={{ fontSize: 10, color: "var(--text-muted)", cursor: "help" }}
+                            style={{ fontSize: 10, color: "var(--text1)", cursor: "help" }}
                             title={a.pt_renewal_blocked_reason || ""}
                           >
                             {a.pt_end_date && a.member_plan_expiry && a.pt_end_date >= a.member_plan_expiry
@@ -1521,7 +1521,7 @@ export default function TrainerAssignments() {
                           <span className={`badge ${memberCoveredPT ? "badge-green" : "badge-yellow"}`} style={{ fontSize: 11 }}>
                             {memberCoveredPT ? "Enroll Covered" : "Enroll Pending"}
                           </span>
-                          <span style={{ fontSize: 11, color: "var(--text-muted)" }}>
+                          <span style={{ fontSize: 11, color: "var(--text1)" }}>
                             ₹{memberPaid.toLocaleString("en-IN")} / ₹{ptAmt.toLocaleString("en-IN")}
                           </span>
                           {/* Renewal status — compare collected vs trainer payable (not total) */}
@@ -1530,14 +1530,14 @@ export default function TrainerAssignments() {
                               <span className={`badge ${renewalCoveredPT ? "badge-green" : "badge-yellow"}`} style={{ fontSize: 11, marginTop: 2 }}>
                                 {renewalCoveredPT ? "Renewal Covered" : "Renewal Pending"}
                               </span>
-                              <span style={{ fontSize: 11, color: "var(--text-muted)" }}>
+                              <span style={{ fontSize: 11, color: "var(--text1)" }}>
                                 ₹{renewalMemberPaid.toLocaleString("en-IN", { minimumFractionDigits: 2 })} / ₹{pendingRenewalTrainer.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
                               </span>
                             </>
                           )}
                         </div>
                       ) : (
-                        <span style={{ color: "var(--text-muted)", fontSize: 12 }}>—</span>
+                        <span style={{ color: "var(--text1)", fontSize: 12 }}>—</span>
                       )}
                     </td>
 
@@ -1579,7 +1579,7 @@ export default function TrainerAssignments() {
 
                         {/* ── No PT configured ── */}
                         {ptAmt === 0 && pendingRenewalTrainer === 0 && !a.has_paid_pt_renewals && (
-                          <span style={{ color: "var(--text-muted)", fontSize: 12 }}>—</span>
+                          <span style={{ color: "var(--text1)", fontSize: 12 }}>—</span>
                         )}
                       </div>
                     </td>

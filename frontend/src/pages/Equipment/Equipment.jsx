@@ -175,7 +175,7 @@ export default function Equipment() {
               </span>
               {e.next_service && (
                 <span className="mobile-card__meta"
-                  style={{ color: e.next_service <= today ? "var(--danger)" : "var(--text3)" }}>
+                  style={{ color: e.next_service <= today ? "var(--danger)" : "var(--text1)" }}>
                   Next service: {e.next_service}
                 </span>
               )}
@@ -197,21 +197,17 @@ export default function Equipment() {
               <th>Condition</th><th>Next Service</th><th>Location</th><th>Actions</th>
             </tr></thead>
             <tbody>
-              {loading ? <tr><td colSpan={8} style={{textAlign:"center",padding:32,color:"var(--text3)"}}>Loading…</td></tr>
-              : list.filter(e=>e.is_active).length===0 ? <tr><td colSpan={8} style={{textAlign:"center",padding:32,color:"var(--text3)"}}>No equipment found</td></tr>
+              {loading ? <tr><td colSpan={8} style={{textAlign:"center",padding:32}}>Loading…</td></tr>
+              : list.filter(e=>e.is_active).length===0 ? <tr><td colSpan={8} style={{textAlign:"center",padding:32}}>No equipment found</td></tr>
               : list.filter(e=>e.is_active).map(e => (
                 <tr key={e.id}>
-                  <td><b>{e.name}</b></td>
+                  <td>{e.name}</td>
                   <td><span className="badge badge-blue">{e.category?.replace("_"," ")}</span></td>
-                  <td style={{color:"var(--text3)"}}>{e.brand||"—"}</td>
+                  <td>{e.brand||"—"}</td>
                   <td>{e.quantity}</td>
                   <td><span className={`badge ${CONDITIONS[e.condition]||"badge-gray"}`}>{e.condition?.replace("_"," ")}</span></td>
-                  <td>
-                    {e.next_service
-                      ? <span style={{color: e.next_service<=today ? "var(--danger)":"var(--text2)",fontSize:12}}>{e.next_service}</span>
-                      : <span style={{color:"var(--text3)"}}>—</span>}
-                  </td>
-                  <td style={{color:"var(--text3)",fontSize:12}}>{e.location||"—"}</td>
+                  <td>{e.next_service || "—"}</td>
+                  <td>{e.location||"—"}</td>
                   <td>
                     <div style={{display:"flex",gap:6}}>
                       <button className="btn btn-sm btn-secondary" onClick={()=>{setSelected(e);setModal("edit");}}>Edit</button>

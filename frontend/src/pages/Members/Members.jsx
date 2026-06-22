@@ -1090,15 +1090,15 @@ function PaymentHistoryModal({ member, onClose, onRefresh, onBill, gymInfo = {} 
                               inst.installment_type === "renewal" ? "Renewal" : "Balance Payment";
                           return (
                             <tr key={inst.id} style={{ borderTop: ri > 0 ? "1px solid var(--border)" : "none" }}>
-                              <td style={{ padding: "6px 10px", color: "var(--text2)" }}>{inst.paid_date}</td>
-                              <td style={{ padding: "6px 10px", color: "var(--info)", fontWeight: 600, fontSize: 11 }}>
+                              <td style={{ padding: "6px 10px" }}>{inst.paid_date}</td>
+                              <td style={{ padding: "6px 10px" }}>
                                 {typeLabel}
                               </td>
-                              <td style={{ padding: "6px 10px", textAlign: "right", fontFamily: "var(--font-mono)", color: "var(--accent)", fontWeight: 700 }}>
+                              <td style={{ padding: "6px 10px", textAlign: "right" }}>
                                 ₹{Number(inst.amount).toLocaleString("en-IN")}
                               </td>
                               <td style={{
-                                padding: "6px 10px", textAlign: "right", fontFamily: "var(--font-mono)",
+                                padding: "6px 10px", textAlign: "right",
                                 color: parseFloat(inst.balance_after) > 0 ? "var(--warn)" : "var(--teal)"
                               }}>
                                 ₹{Number(inst.balance_after).toLocaleString("en-IN")}
@@ -1776,29 +1776,26 @@ export default function Members() {
                         <div>
                           <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap", marginBottom: 3 }}>
                             <span style={{
-                              fontFamily: "var(--font-mono)", fontSize: 11,
-                              color: "var(--accent)", fontWeight: 700,
                               background: "var(--accent-dim)", padding: "1px 6px", borderRadius: 4
                             }}>
                               {m.member_id_display || `M${String(m.id).padStart(4, "0")}`}
                             </span>
                             {m.gym_member_id && (
                               <span style={{
-                                fontFamily: "var(--font-mono)", fontSize: 11,
-                                color: "var(--text3)", background: "var(--surface2)",
+                                background: "var(--surface2)",
                                 padding: "1px 6px", borderRadius: 4, border: "1px solid var(--border)"
                               }}>
                                 {m.gym_member_id}
                               </span>
                             )}
                           </div>
-                          <div style={{ fontWeight: 600 }}>{m.name}</div>
-                          <div style={{ fontSize: 11, color: "var(--text3)", marginTop: 2 }}>
+                          <div>{m.name}</div>
+                          <div style={{ marginTop: 2 }}>
                             {m.phone}
                             {m.email && <span> · {m.email}</span>}
                           </div>
                           {m.dob && (
-                            <div style={{ fontSize: 11, color: "var(--text3)", marginTop: 1 }}>
+                            <div style={{ marginTop: 1 }}>
                               DOB: {m.dob}
                             </div>
                           )}
@@ -1808,14 +1805,14 @@ export default function Members() {
 
                     {/* ── Plan cell: name + type + diet ── */}
                     <td style={{ minWidth: 150 }}>
-                      <div style={{ fontWeight: 500 }}>
-                        {m.plan_name || <span style={{ color: "var(--text3)" }}>No Plan</span>}
+                      <div>
+                        {m.plan_name || "No Plan"}
                       </div>
-                      <div style={{ fontSize: 11, color: "var(--text3)", marginTop: 2, textTransform: "capitalize" }}>
+                      <div style={{ marginTop: 2, textTransform: "capitalize" }}>
                         {m.plan_type}
                       </div>
                       {m.diet_name && (
-                        <div style={{ fontSize: 11, color: "var(--teal)", marginTop: 2 }}>
+                        <div style={{ marginTop: 2 }}>
                           🥗 {m.diet_name}
                         </div>
                       )}
@@ -1823,13 +1820,7 @@ export default function Members() {
 
                     {/* ── Renewal cell: date + days badge ── */}
                     <td style={{ minWidth: 110, whiteSpace: "nowrap" }}>
-                      <div style={{
-                        fontFamily: "var(--font-mono)",
-                        color: (m.days_until_expiry ?? 99) <= 0 ? "var(--danger)"
-                          : (m.days_until_expiry ?? 99) <= 7 ? "var(--warn)" : "var(--text2)"
-                      }}>
-                        {m.renewal_date || "—"}
-                      </div>
+                      <div>{m.renewal_date || "—"}</div>
                       <div style={{ marginTop: 4 }}>
                         {m.days_until_expiry != null ? (() => {
                           const d = m.days_until_expiry;
@@ -1844,15 +1835,13 @@ export default function Members() {
 
                     {/* ── Financials cell: paid + balance ── */}
                     <td style={{ textAlign: "right", minWidth: 110 }}>
-                      <div style={{ fontFamily: "var(--font-mono)", color: "var(--accent)" }}>
-                        ₹{Number(m.total_paid || 0).toLocaleString("en-IN")}
-                      </div>
+                      <div>₹{Number(m.total_paid || 0).toLocaleString("en-IN")}</div>
                       <div style={{ marginTop: 3 }}>
                         {(m.balance_due || 0) > 0
                           ? <span className="badge badge-yellow">
                               ₹{Number(m.balance_due).toLocaleString("en-IN")} due
                             </span>
-                          : <span style={{ fontSize: 11, color: "var(--text3)" }}>✓ clear</span>
+                          : <span>✓ clear</span>
                         }
                       </div>
                     </td>

@@ -114,7 +114,7 @@ function FilterBar({ catFilter, setCatFilter, search, setSearch, cats, placehold
           stroke="currentColor" strokeWidth="2"
           style={{
             position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)",
-            color: "var(--text3)", pointerEvents: "none"
+            color: "var(--text1)", pointerEvents: "none"
           }}>
           <circle cx="11" cy="11" r="8" />
           <path d="m21 21-4.35-4.35" />
@@ -157,8 +157,8 @@ function AffordModal({ result, onClose }) {
             display: "flex", justifyContent: "space-between", padding: "8px 12px",
             background: "var(--surface2)", borderRadius: 8
           }}>
-            <span style={{ color: "var(--text3)" }}>Item Price</span>
-            <span style={{ fontFamily: "var(--font-mono)", fontWeight: 700 }}>
+            <span style={{ color: "var(--text1)" }}>Item Price</span>
+            <span style={{ fontFamily: "var(--font-body)", fontWeight: 700 }}>
               {result.item_price ? `₹${Number(result.item_price).toLocaleString("en-IN")}` : "—"}
             </span>
           </div>
@@ -166,9 +166,9 @@ function AffordModal({ result, onClose }) {
             display: "flex", justifyContent: "space-between", padding: "8px 12px",
             background: "var(--surface2)", borderRadius: 8
           }}>
-            <span style={{ color: "var(--text3)" }}>Money Left ({MONTHS[result.month - 1]} {result.year})</span>
+            <span style={{ color: "var(--text1)" }}>Money Left ({MONTHS[result.month - 1]} {result.year})</span>
             <span style={{
-              fontFamily: "var(--font-mono)", fontWeight: 700,
+              fontFamily: "var(--font-body)", fontWeight: 700,
               color: result.money_left >= 0 ? "var(--teal)" : "var(--danger)"
             }}>
               ₹{Number(result.money_left).toLocaleString("en-IN")}
@@ -179,8 +179,8 @@ function AffordModal({ result, onClose }) {
               display: "flex", justifyContent: "space-between", padding: "8px 12px",
               background: "rgba(255,91,91,.08)", borderRadius: 8
             }}>
-              <span style={{ color: "var(--text3)" }}>Shortfall</span>
-              <span style={{ fontFamily: "var(--font-mono)", fontWeight: 700, color: "var(--danger)" }}>
+              <span style={{ color: "var(--text1)" }}>Shortfall</span>
+              <span style={{ fontFamily: "var(--font-body)", fontWeight: 700, color: "var(--danger)" }}>
                 ₹{Number(result.item_price - result.money_left).toLocaleString("en-IN")}
               </span>
             </div>
@@ -391,10 +391,10 @@ export default function Finances() {
         background: "var(--surface2)", border: "1px solid var(--border)",
         borderRadius: 8, padding: "10px 14px", fontSize: 12
       }}>
-        <div style={{ color: "var(--text3)", marginBottom: 4 }}>{label}</div>
+        <div style={{ color: "var(--text1)", marginBottom: 4 }}>{label}</div>
         {payload.map(p => (
           <div key={p.name} style={{ color: p.color, fontFamily: "var(--font-body)" }}>
-            {p.name}: <span style={{ fontFamily: "var(--font-mono)" }}>₹{Number(p.value).toLocaleString("en-IN")}</span>
+            {p.name}: <span style={{ fontFamily: "var(--font-body)" }}>₹{Number(p.value).toLocaleString("en-IN")}</span>
           </div>
         ))}
       </div>
@@ -414,10 +414,10 @@ export default function Finances() {
       gap: 4,
       minWidth: 120,
     }}>
-      <div className="finance-mini-label" style={{ fontSize: 11, color: "var(--text3)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.4px", lineHeight: 1.3 }}>
+      <div className="finance-mini-label" style={{ fontSize: 11, color: "var(--text1)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.4px", lineHeight: 1.3 }}>
         {label}
       </div>
-      <div className="finance-mini-val" style={{ fontSize: 17, fontFamily: "var(--font-mono)", fontWeight: 700, color: color || "var(--text1)" }}>
+      <div className="finance-mini-val" style={{ fontSize: 17, fontFamily: "var(--font-body)", fontWeight: 700, color: color || "var(--text1)" }}>
         {val}
       </div>
     </div>
@@ -601,13 +601,13 @@ export default function Finances() {
       {tab === "overview" && (
         <div className="card" style={{ padding: 20 }}>
           <div style={{
-            fontFamily: "var(--font-display)", fontSize: 14,
+            fontFamily: "var(--font-body)", fontSize: 14,
             fontWeight: 700, marginBottom: 16
           }}>
             12-Month Income vs Expense vs Savings
           </div>
           {loading ? (
-            <div style={{ textAlign: "center", padding: 40, color: "var(--text3)" }}>Loading…</div>
+            <div style={{ textAlign: "center", padding: 40, color: "var(--text1)" }}>Loading…</div>
           ) : (
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={summary?.monthly_trend || []} barGap={3} barSize={10}>
@@ -619,7 +619,7 @@ export default function Finances() {
                   tickFormatter={v => `₹${v / 1000}k`} />
                 <Tooltip content={customTooltip} />
                 <Legend iconType="circle" iconSize={8}
-                  wrapperStyle={{ fontSize: 12, color: "var(--text2)" }} />
+                  wrapperStyle={{ fontSize: 12, color: "var(--text1)" }} />
                 <Bar dataKey="income" fill="#f97316" name="Income" radius={[3, 3, 0, 0]} />
                 <Bar dataKey="expense" fill="#ff5b5b" name="Expense" radius={[3, 3, 0, 0]} />
                 <Bar dataKey="savings" fill="#10b981" name="Savings" radius={[3, 3, 0, 0]} />
@@ -635,13 +635,13 @@ export default function Finances() {
               ].map(block => (
                 <div key={block.title}>
                   <div style={{
-                    fontFamily: "var(--font-display)", fontSize: 13,
-                    fontWeight: 700, marginBottom: 10, color: "var(--text2)"
+                    fontFamily: "var(--font-body)", fontSize: 13,
+                    fontWeight: 700, marginBottom: 10, color: "var(--text1)"
                   }}>
                     {block.title}
                   </div>
                   {block.data?.length === 0
-                    ? <div style={{ fontSize: 12, color: "var(--text3)" }}>No data this month</div>
+                    ? <div style={{ fontSize: 12, color: "var(--text1)" }}>No data this month</div>
                     : block.data?.map(d => {
                       const total = block.data.reduce((s, x) => s + parseFloat(x.total || 0), 0);
                       const pct = total > 0 ? (parseFloat(d.total) / total * 100).toFixed(0) : 0;
@@ -651,10 +651,10 @@ export default function Finances() {
                             display: "flex", justifyContent: "space-between",
                             fontSize: 12, marginBottom: 3
                           }}>
-                            <span style={{ color: "var(--text2)" }}>
+                            <span style={{ color: "var(--text1)" }}>
                               {CAT_LABELS[d.category] || d.category}
                             </span>
-                            <span style={{ color: block.color, fontFamily: "var(--font-mono)", fontWeight: 600 }}>
+                            <span style={{ color: block.color, fontFamily: "var(--font-body)", fontWeight: 600 }}>
                               ₹{Number(d.total).toLocaleString("en-IN")} ({pct}%)
                             </span>
                           </div>
@@ -687,10 +687,10 @@ export default function Finances() {
             display: "flex", justifyContent: "space-between",
             padding: "8px 16px", fontSize: 12,
             borderBottom: "1px solid var(--border)",
-            color: "var(--text3)"
+            color: "var(--text1)"
           }}>
             <span>{filteredInc.length} records</span>
-            <span>Total: <b style={{ color: "var(--accent)", fontFamily: "var(--font-mono)" }}>
+            <span>Total: <b style={{ color: "var(--accent)", fontFamily: "var(--font-body)" }}>
               ₹{incTotal.toLocaleString("en-IN")}
             </b></span>
           </div>
@@ -701,25 +701,20 @@ export default function Finances() {
               </tr></thead>
               <tbody>
                 {filteredInc.length === 0 ? (
-                  <tr><td colSpan={5} style={{ textAlign: "center", padding: 32, color: "var(--text3)" }}>
+                  <tr><td colSpan={5} style={{ textAlign: "center", padding: 32, color: "var(--text1)" }}>
                     No records match
                   </td></tr>
                 ) : filteredInc.slice(0, 100).map(i => (
                   <tr key={i.id}>
-                    <td><b>{i.source}</b></td>
+                    <td>{i.source}</td>
                     <td>
-                      <span className="badge badge-green" style={{ fontSize: 10 }}>
+                      <span className="badge badge-green">
                         {CAT_LABELS[i.category] || i.category}
                       </span>
                     </td>
-                    <td style={{ fontFamily: "var(--font-mono)", color: "var(--accent)", fontWeight: 600 }}>
-                      ₹{Number(i.amount).toLocaleString("en-IN")}
-                    </td>
-                    <td style={{ color: "var(--text3)", fontSize: 12, fontFamily: "var(--font-mono)" }}>{i.date}</td>
-                    <td style={{
-                      color: "var(--text3)", fontSize: 12, maxWidth: 220,
-                      overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap"
-                    }}>
+                    <td>₹{Number(i.amount).toLocaleString("en-IN")}</td>
+                    <td>{i.date}</td>
+                    <td style={{ maxWidth: 220, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                       {i.notes || "—"}
                     </td>
                   </tr>
@@ -743,10 +738,10 @@ export default function Finances() {
             display: "flex", justifyContent: "space-between",
             padding: "8px 16px", fontSize: 12,
             borderBottom: "1px solid var(--border)",
-            color: "var(--text3)"
+            color: "var(--text1)"
           }}>
             <span>{filteredExp.length} records</span>
-            <span>Total: <b style={{ color: "var(--danger)", fontFamily: "var(--font-mono)" }}>
+            <span>Total: <b style={{ color: "var(--danger)", fontFamily: "var(--font-body)" }}>
               ₹{expTotal.toLocaleString("en-IN")}
             </b></span>
           </div>
@@ -758,26 +753,21 @@ export default function Finances() {
               </tr></thead>
               <tbody>
                 {filteredExp.length === 0 ? (
-                  <tr><td colSpan={6} style={{ textAlign: "center", padding: 32, color: "var(--text3)" }}>
+                  <tr><td colSpan={6} style={{ textAlign: "center", padding: 32, color: "var(--text1)" }}>
                     No records match
                   </td></tr>
                 ) : filteredExp.slice(0, 100).map(e => (
                   <tr key={e.id}>
-                    <td><b>{e.description}</b></td>
+                    <td>{e.description}</td>
                     <td>
-                      <span className="badge badge-red" style={{ fontSize: 10 }}>
+                      <span className="badge badge-red">
                         {CAT_LABELS[e.category] || e.category}
                       </span>
                     </td>
-                    <td style={{ fontFamily: "var(--font-mono)", color: "var(--danger)", fontWeight: 600 }}>
-                      ₹{Number(e.amount).toLocaleString("en-IN")}
-                    </td>
-                    <td style={{ color: "var(--text3)", fontSize: 12, fontFamily: "var(--font-mono)" }}>{e.date}</td>
-                    <td style={{ color: "var(--text3)", fontSize: 12 }}>{e.vendor || "—"}</td>
-                    <td style={{
-                      color: "var(--text3)", fontSize: 12, maxWidth: 180,
-                      overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap"
-                    }}>
+                    <td>₹{Number(e.amount).toLocaleString("en-IN")}</td>
+                    <td>{e.date}</td>
+                    <td>{e.vendor || "—"}</td>
+                    <td style={{ maxWidth: 180, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                       {e.notes || "—"}
                     </td>
                   </tr>
@@ -795,7 +785,7 @@ export default function Finances() {
             display: "flex", justifyContent: "space-between", alignItems: "center",
             padding: "12px 16px", borderBottom: "1px solid var(--border)"
           }}>
-            <span style={{ fontSize: 13, color: "var(--text3)" }}>
+            <span style={{ fontSize: 13, color: "var(--text1)" }}>
               {toBuyItems.length} item{toBuyItems.length !== 1 ? "s" : ""}
             </span>
             <button className="btn btn-primary" style={{ fontSize: 12 }}
@@ -804,7 +794,7 @@ export default function Finances() {
             </button>
           </div>
           {toBuyLoading ? (
-            <div style={{ textAlign: "center", padding: 40, color: "var(--text3)" }}>Loading…</div>
+            <div style={{ textAlign: "center", padding: 40, color: "var(--text1)" }}>Loading…</div>
           ) : (
             <div className="table-wrap finance-table-wrap tobuy-table-wrap">
               <table>
@@ -814,19 +804,17 @@ export default function Finances() {
                 </tr></thead>
                 <tbody>
                   {toBuyItems.length === 0 ? (
-                    <tr><td colSpan={10} style={{ textAlign: "center", padding: 32, color: "var(--text3)" }}>
+                    <tr><td colSpan={10} style={{ textAlign: "center", padding: 32, color: "var(--text1)" }}>
                       No items yet
                     </td></tr>
                   ) : toBuyItems.map(item => (
                     <tr key={item.id}>
-                      <td><b>{item.item_name}</b></td>
-                      <td style={{ fontFamily: "var(--font-mono)" }}>{item.quantity}</td>
-                      <td style={{ fontFamily: "var(--font-mono)", color: "var(--accent)" }}>
-                        {item.price ? `₹${Number(item.price).toLocaleString("en-IN")}` : "—"}
-                      </td>
+                      <td>{item.item_name}</td>
+                      <td>{item.quantity}</td>
+                      <td>{item.price ? `₹${Number(item.price).toLocaleString("en-IN")}` : "—"}</td>
                       <td>
                         <span style={{
-                          fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 20,
+                          padding: "2px 8px", borderRadius: 20,
                           background: PRIORITY_COLOR[item.Priority] + "22",
                           color: PRIORITY_COLOR[item.Priority],
                           textTransform: "capitalize"
@@ -834,17 +822,14 @@ export default function Finances() {
                       </td>
                       <td>
                         <span style={{
-                          fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 20,
+                          padding: "2px 8px", borderRadius: 20,
                           background: STATUS_COLOR[item.status] + "22",
                           color: STATUS_COLOR[item.status],
                           textTransform: "capitalize"
                         }}>{item.status}</span>
                       </td>
-                      <td style={{ color: "var(--text3)", fontSize: 12 }}>{item.BuyingDate || "—"}</td>
-                      <td style={{
-                        color: "var(--text3)", fontSize: 12, maxWidth: 180,
-                        overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap"
-                      }}>
+                      <td>{item.BuyingDate || "—"}</td>
+                      <td style={{ maxWidth: 180, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                         {item.notes || "—"}
                       </td>
                       <td>
@@ -857,7 +842,7 @@ export default function Finances() {
                         <button className="btn btn-sm" style={{
                           fontSize: 11,
                           background: item.price ? "rgba(249,115,22,.09)" : "var(--surface2)",
-                          color: item.price ? "var(--accent)" : "var(--text3)",
+                          color: item.price ? "var(--accent)" : "var(--text1)",
                           border: `1px solid ${item.price ? "rgba(249,115,22,.3)" : "var(--border)"}`,
                           cursor: item.price ? "pointer" : "not-allowed",
                           minWidth: 70,

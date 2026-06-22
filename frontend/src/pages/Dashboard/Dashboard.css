@@ -8,7 +8,12 @@
   margin-bottom: 0;
 }
 .dash-chart-card { padding: 20px; }
-.dash-chart-title { font-family: var(--font-display); font-size: 14px; font-weight: 700; color: var(--text1); margin-bottom: 16px; }
+.dash-chart-title { font-family: var(--font-body); font-size: 14px; font-weight: 700; color: var(--text1); margin-bottom: 16px; }
+
+/* Normalize all stat card text to body font within dashboard */
+.dashboard .stat-card .value { font-family: var(--font-body); font-weight: var(--fw-bold); }
+.dashboard .stat-card .label { font-family: var(--font-body); }
+.dashboard .stat-card .sub   { font-family: var(--font-body); }
 .dash-table-header { display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border-bottom:1px solid var(--border); }
 .chart-tooltip {
   background: var(--surface);

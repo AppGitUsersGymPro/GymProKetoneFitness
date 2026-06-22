@@ -137,7 +137,7 @@ function ShiftModal({ shift, onClose, onSave }) {
                       border: "1px solid",
                       borderColor: selectedDays.includes(i) ? "var(--accent)" : "var(--border)",
                       background: selectedDays.includes(i) ? "rgba(249,115,22,.12)" : "transparent",
-                      color: selectedDays.includes(i) ? "var(--accent)" : "var(--text3)",
+                      color: selectedDays.includes(i) ? "var(--accent)" : "var(--text1)",
                       cursor: "pointer",
                     }}>
                     {d}
@@ -152,7 +152,7 @@ function ShiftModal({ shift, onClose, onSave }) {
               <label className="form-label">Late Grace (mins)</label>
               <input className="form-input" type="number" onWheel={e => e.target.blur()} min={0} value={form.late_grace_minutes}
                 onChange={e => set("late_grace_minutes", +e.target.value)} />
-              <span style={{ fontSize: 11, color: "var(--text3)", marginTop: 3 }}>
+              <span style={{ fontSize: 11, color: "var(--text1)", marginTop: 3 }}>
                 Check-in within this window = on time
               </span>
             </div>
@@ -160,7 +160,7 @@ function ShiftModal({ shift, onClose, onSave }) {
               <label className="form-label">OT Threshold (mins)</label>
               <input className="form-input" type="number" onWheel={e => e.target.blur()} min={0} value={form.overtime_threshold_minutes}
                 onChange={e => set("overtime_threshold_minutes", +e.target.value)} />
-              <span style={{ fontSize: 11, color: "var(--text3)", marginTop: 3 }}>
+              <span style={{ fontSize: 11, color: "var(--text1)", marginTop: 3 }}>
                 Check-out beyond this = overtime
               </span>
             </div>
@@ -246,9 +246,9 @@ function ShiftsTab() {
       {/* Shift templates */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(280px,1fr))", gap: 12, marginBottom: 24 }}>
         {loading ? (
-          <div style={{ color: "var(--text3)", padding: 24 }}>Loading…</div>
+          <div style={{ color: "var(--text1)", padding: 24 }}>Loading…</div>
         ) : shifts.length === 0 ? (
-          <div style={{ color: "var(--text3)", padding: 24 }}>
+          <div style={{ color: "var(--text1)", padding: 24 }}>
             No shift templates yet. Create one to assign to trainers.
           </div>
         ) : shifts.map(sh => {
@@ -258,7 +258,7 @@ function ShiftsTab() {
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                 <div>
                   <div style={{ fontWeight: 800, fontSize: 14, color: "var(--text1)" }}>{sh.name}</div>
-                  <div style={{ fontSize: 12, color: "var(--accent)", fontFamily: "var(--font-mono)", marginTop: 3 }}>
+                  <div style={{ fontSize: 12, color: "var(--accent)", fontFamily: "var(--font-body)", marginTop: 3 }}>
                     {sh.start_time?.slice(0, 5)} – {sh.end_time?.slice(0, 5)}
                   </div>
                 </div>
@@ -279,16 +279,16 @@ function ShiftsTab() {
                     <span key={i} style={{
                       padding: "2px 8px", borderRadius: 20, fontSize: 10, fontWeight: 700,
                       background: active ? "rgba(249,115,22,.12)" : "var(--surface2)",
-                      color: active ? "var(--accent)" : "var(--text3)",
+                      color: active ? "var(--accent)" : "var(--text1)",
                       border: `1px solid ${active ? "rgba(249,115,22,.3)" : "var(--border)"}`,
                     }}>{d}</span>
                   );
                 })}
               </div>
-              <div style={{ fontSize: 11, color: "var(--text3)", marginTop: 8 }}>
+              <div style={{ fontSize: 11, color: "var(--text1)", marginTop: 8 }}>
                 Grace: {sh.late_grace_minutes}m late &nbsp;·&nbsp; OT after {sh.overtime_threshold_minutes}m
               </div>
-              <div style={{ fontSize: 11, color: "var(--text2)", marginTop: 4 }}>
+              <div style={{ fontSize: 11, color: "var(--text1)", marginTop: 4 }}>
                 {assignedCount} staff assigned
               </div>
             </div>
@@ -309,12 +309,10 @@ function ShiftsTab() {
             <tbody>
               {staff.map(s => (
                 <tr key={s.id}>
-                  <td><b>{s.name}</b></td>
+                  <td>{s.name}</td>
                   <td><span className="badge badge-blue">{s.role}</span></td>
-                  <td style={{ fontSize: 12, color: "var(--text2)" }}>
-                    {shifts.find(sh => sh.id === s.shift_template)?.name || (
-                      <span style={{ color: "var(--text3)" }}>None assigned</span>
-                    )}
+                  <td>
+                    {shifts.find(sh => sh.id === s.shift_template)?.name || "None assigned"}
                   </td>
                   <td>
                     <select className="form-input" style={{ minWidth: 180, fontSize: 12 }}
@@ -404,7 +402,7 @@ function MarkDayModal({ staffId, date, existing, onClose, onSave }) {
                     onChange={e => set("check_in", e.target.value)} />
                 </div>
                 <div className="form-group">
-                  <label className="form-label">Check Out <span style={{ color: "var(--text3)", fontSize: 11 }}>(optional)</span></label>
+                  <label className="form-label">Check Out <span style={{ color: "var(--text1)", fontSize: 11 }}>(optional)</span></label>
                   <input className="form-input" type="time" value={form.check_out} required
                     onChange={e => set("check_out", e.target.value)} />
                 </div>
@@ -447,7 +445,7 @@ function StaffCalendar({ staffId, staffName, onBack }) {
 
   useEffect(() => { load(); }, [load]);
 
-  if (loading) return <div style={{ padding: 40, textAlign: "center", color: "var(--text3)" }}>Loading calendar…</div>;
+  if (loading) return <div style={{ padding: 40, textAlign: "center", color: "var(--text1)" }}>Loading calendar…</div>;
   if (!data) return null;
 
   const { counts, shift, days } = data;
@@ -500,7 +498,7 @@ function StaffCalendar({ staffId, staffName, onBack }) {
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 16 }}>
             {/* Static count boxes */}
             {[
-              { key: "working_days", label: "Working Days", color: "var(--text2)", val: counts.working_days ?? 0 },
+              { key: "working_days", label: "Working Days", color: "var(--text1)", val: counts.working_days ?? 0 },
               { key: "present", label: "Present", color: "#22c55e", val: counts.present ?? 0 },
               { key: "absent", label: "Absent", color: "#ef4444", val: (counts.absent ?? 0) + (counts.auto_absent ?? 0) },
               { key: "auto_absent", label: "Auto Absent", color: "#dc2626", val: counts.auto_absent ?? 0 },
@@ -514,7 +512,7 @@ function StaffCalendar({ staffId, staffName, onBack }) {
                 borderRadius: 8, padding: "8px 14px", textAlign: "center", minWidth: 70,
               }}>
                 <div style={{ fontSize: 18, fontWeight: 800, color: c.color }}>{c.val}</div>
-                <div style={{ fontSize: 10, color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".5px" }}>{c.label}</div>
+                <div style={{ fontSize: 10, color: "var(--text1)", textTransform: "uppercase", letterSpacing: ".5px" }}>{c.label}</div>
               </div>
             ))}
 
@@ -523,10 +521,10 @@ function StaffCalendar({ staffId, staffName, onBack }) {
               background: "var(--surface)", border: "2px solid rgba(249,115,22,.3)",
               borderRadius: 8, padding: "8px 18px", textAlign: "center", minWidth: 110,
             }}>
-              <div style={{ fontSize: 20, fontWeight: 800, color: "var(--accent)", fontFamily: "var(--font-mono)" }}>
+              <div style={{ fontSize: 20, fontWeight: 800, color: "var(--accent)", fontFamily: "var(--font-body)" }}>
                 {wh}h {wm}m
               </div>
-              <div style={{ fontSize: 10, color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".5px" }}>
+              <div style={{ fontSize: 10, color: "var(--text1)", textTransform: "uppercase", letterSpacing: ".5px" }}>
                 Total Worked
               </div>
               {totalLatemins > 0 && (
@@ -551,7 +549,7 @@ function StaffCalendar({ staffId, staffName, onBack }) {
           {DAYS_SHORT.map(d => (
             <div key={d} style={{
               textAlign: "center", fontSize: 11, fontWeight: 700,
-              color: d === "Sun" ? "var(--danger)" : "var(--text3)", padding: "4px 0",
+              color: d === "Sun" ? "var(--danger)" : "var(--text1)", padding: "4px 0",
               minWidth: 0, overflow: "hidden",
             }}>
               {d}
@@ -621,17 +619,17 @@ function StaffCalendar({ staffId, staffName, onBack }) {
 
                 {/* Non-working day marker */}
                 {!day.is_working_day && !day.is_future && (
-                  <div style={{ fontSize: 9, color: "var(--text3)", marginTop: 2 }}>OFF</div>
+                  <div style={{ fontSize: 9, color: "var(--text1)", marginTop: 2 }}>OFF</div>
                 )}
 
                 {/* Times + working hrs + late/OT details */}
                 {day.check_in && (
-                  <div style={{ fontSize: 9, color: "var(--text2)", marginTop: 2, lineHeight: 1.4 }}>
+                  <div style={{ fontSize: 9, color: "var(--text1)", marginTop: 2, lineHeight: 1.4 }}>
                     {day.check_in.slice(0, 5)}{day.check_out ? ` – ${day.check_out.slice(0, 5)}` : ""}
                   </div>
                 )}
                 {day.worked_minutes > 0 && (
-                  <div style={{ fontSize: 9, color: "var(--text2)", fontWeight: 600, marginTop: 1 }}>
+                  <div style={{ fontSize: 9, color: "var(--text1)", fontWeight: 600, marginTop: 1 }}>
                     {fmt_mins(day.worked_minutes)} worked
                   </div>
                 )}
@@ -675,12 +673,12 @@ function StaffCalendar({ staffId, staffName, onBack }) {
           {Object.entries(STATUS_META).map(([k, v]) => (
             <div key={k} style={{ display: "flex", alignItems: "center", gap: 4 }}>
               <div style={{ width: 10, height: 10, borderRadius: 3, background: v.bg, border: `1px solid ${v.color}` }} />
-              <span style={{ fontSize: 10, color: "var(--text3)" }}>{v.label}</span>
+              <span style={{ fontSize: 10, color: "var(--text1)" }}>{v.label}</span>
             </div>
           ))}
           <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
             <div style={{ width: 10, height: 10, borderRadius: 3, background: "var(--surface2)" }} />
-            <span style={{ fontSize: 10, color: "var(--text3)" }}>Day Off</span>
+            <span style={{ fontSize: 10, color: "var(--text1)" }}>Day Off</span>
           </div>
         </div>
       </div>
@@ -869,7 +867,7 @@ function AttendanceModal({ staffList, onClose, onSave }) {
             <tbody>
               {staffList.filter(s => s.status === "active").map(s => (
                 <tr key={s.id}>
-                  <td><b>{s.name}</b></td>
+                  <td>{s.name}</td>
                   <td><span className="badge badge-blue">{s.role}</span></td>
                   <td>
                     <select className="form-input" style={{ minWidth: 110 }}
@@ -1023,7 +1021,7 @@ function PaymentsTab({ staffList }) {
         <button className="btn btn-secondary" onClick={generate} disabled={genLoading}>
           {genLoading ? "Generating…" : "Generate Records"}
         </button>
-        <div style={{ marginLeft: "auto", fontSize: 11, color: "var(--text3)", lineHeight: 1.6 }}>
+        <div style={{ marginLeft: "auto", fontSize: 11, color: "var(--text1)", lineHeight: 1.6 }}>
           Salary = Base × Attendance%<br />
           Billable = Worked + OT − Late hrs
         </div>
@@ -1053,16 +1051,16 @@ function PaymentsTab({ staffList }) {
       {/* Table */}
       {!loaded ? (
         <div style={{
-          textAlign: "center", padding: "60px 20px", color: "var(--text3)", fontSize: 14,
+          textAlign: "center", padding: "60px 20px", color: "var(--text1)", fontSize: 14,
           background: "var(--surface)", borderRadius: "var(--radius)", border: "1px solid var(--border)"
         }}>
-          Select month & year, then click <b style={{ color: "var(--text2)" }}>Load Salaries</b>
+          Select month & year, then click <b style={{ color: "var(--text1)" }}>Load Salaries</b>
         </div>
       ) : loading ? (
-        <div style={{ textAlign: "center", padding: 40, color: "var(--text3)" }}>Loading…</div>
+        <div style={{ textAlign: "center", padding: 40, color: "var(--text1)" }}>Loading…</div>
       ) : rows.length === 0 ? (
         <div style={{
-          textAlign: "center", padding: "48px 20px", color: "var(--text3)", fontSize: 13,
+          textAlign: "center", padding: "48px 20px", color: "var(--text1)", fontSize: 13,
           background: "var(--surface)", borderRadius: "var(--radius)", border: "1px solid var(--border)"
         }}>
           No active staff found.
@@ -1100,34 +1098,27 @@ function PaymentsTab({ staffList }) {
                     <tr key={r.staff_id} style={{ opacity: isPaid ? 0.8 : 1 }}>
                       {/* Name + Role */}
                       <td>
-                        <div style={{ fontWeight: 700 }}>{r.staff_name}</div>
+                        <div>{r.staff_name}</div>
                         <div>
-                          <span className="badge badge-blue" style={{ fontSize: 10 }}>{r.staff_role}</span>
+                          <span className="badge badge-blue">{r.staff_role}</span>
                         </div>
                       </td>
 
                       {/* Shift */}
-                      <td style={{ fontSize: 11, color: "var(--text2)" }}>
+                      <td>
                         {r.shift_name ? (
                           <>
-                            <div style={{ fontWeight: 600, color: "var(--accent)" }}>{r.shift_name}</div>
-                            <div style={{ color: "var(--text3)", fontSize: 10 }}>
-                              {r.shift_start?.slice(0, 5)}–{r.shift_end?.slice(0, 5)}
-                            </div>
+                            <div>{r.shift_name}</div>
+                            <div>{r.shift_start?.slice(0, 5)}–{r.shift_end?.slice(0, 5)}</div>
                           </>
-                        ) : <span style={{ color: "var(--text3)" }}>No shift</span>}
+                        ) : "No shift"}
                       </td>
 
                       {/* Attendance % */}
                       <td style={{ textAlign: "center" }}>
-                        <div style={{ fontSize: 11, color: "var(--text3)", marginBottom: 1 }}>
-                          Days: <span style={{ fontWeight: 700, color: attCol }}>{attPct}%</span>
-                        </div>
-                        <div style={{
-                          fontSize: 15, fontWeight: 800, color: hrCol,
-                          fontFamily: "var(--font-mono)"
-                        }}>{hoursPct}%</div>
-                        <div style={{ fontSize: 9, color: "var(--text3)", marginBottom: 2 }}>hrs worked</div>
+                        <div style={{ marginBottom: 1 }}>Days: {attPct}%</div>
+                        <div>{hoursPct}%</div>
+                        <div style={{ marginBottom: 2 }}>hrs worked</div>
                         <div style={{
                           width: 52, height: 4, background: "var(--surface2)",
                           borderRadius: 2, margin: "2px auto 0"
@@ -1140,29 +1131,17 @@ function PaymentsTab({ staffList }) {
                       </td>
 
                       {/* P / A / Late / OT days */}
-                      <td style={{ textAlign: "center", fontSize: 12, fontFamily: "var(--font-mono)" }}>
-                        <span style={{ color: "#22c55e" }}>{r.days_present}</span>
-                        <span style={{ color: "var(--text3)" }}>/</span>
-                        <span style={{ color: "#ef4444" }}>{r.days_absent}</span>
-                        <span style={{ color: "var(--text3)" }}>/</span>
-                        <span style={{ color: "#f97316" }}>{r.days_late}</span>
-                        <span style={{ color: "var(--text3)" }}>/</span>
-                        <span style={{ color: "#3b82f6" }}>{r.days_ot}</span>
+                      <td style={{ textAlign: "center" }}>
+                        {r.days_present}/{r.days_absent}/{r.days_late}/{r.days_ot}
                       </td>
 
                       {/* Scheduled hrs */}
-                      <td style={{
-                        textAlign: "right", fontSize: 11,
-                        fontFamily: "var(--font-mono)", color: "var(--text3)"
-                      }}>
+                      <td style={{ textAlign: "right" }}>
                         {fmtMins(r.total_scheduled_mins)}
                       </td>
 
                       {/* Worked hrs */}
-                      <td style={{
-                        textAlign: "right", fontSize: 12,
-                        fontFamily: "var(--font-mono)", color: "var(--text1)", fontWeight: 600
-                      }}>
+                      <td style={{ textAlign: "right" }}>
                         {fmtMins(r.total_worked_mins)}
                       </td>
 
@@ -1170,57 +1149,44 @@ function PaymentsTab({ staffList }) {
                       <td style={{ textAlign: "right" }}>
                         {r.total_late_mins > 0 ? (
                           <span style={{
-                            fontSize: 11, fontWeight: 700, color: "#f97316",
                             background: "rgba(249,115,22,.12)", padding: "2px 6px", borderRadius: 4
                           }}>
                             −{fmtMins(r.total_late_mins)}
                           </span>
-                        ) : <span style={{ color: "var(--text3)", fontSize: 11 }}>—</span>}
+                        ) : "—"}
                       </td>
 
                       {/* OT */}
                       <td style={{ textAlign: "right" }}>
                         {r.total_ot_mins > 0 ? (
                           <span style={{
-                            fontSize: 11, fontWeight: 700, color: "#3b82f6",
                             background: "rgba(59,130,246,.12)", padding: "2px 6px", borderRadius: 4
                           }}>
                             +{fmtMins(r.total_ot_mins)}
                           </span>
-                        ) : <span style={{ color: "var(--text3)", fontSize: 11 }}>—</span>}
+                        ) : "—"}
                       </td>
 
                       {/* Billable hrs */}
-                      <td style={{
-                        textAlign: "right", fontSize: 12,
-                        fontFamily: "var(--font-mono)", color: "var(--accent)", fontWeight: 700
-                      }}>
+                      <td style={{ textAlign: "right" }}>
                         {fmtMins(r.billable_mins)}
                         {r.total_scheduled_mins > 0 && (
-                          <div style={{ fontSize: 9, color: "var(--text3)", fontWeight: 400 }}>
-                            of {fmtMins(r.total_scheduled_mins)}
-                          </div>
+                          <div>of {fmtMins(r.total_scheduled_mins)}</div>
                         )}
                       </td>
 
                       {/* Base salary */}
-                      <td style={{
-                        textAlign: "right", fontSize: 12,
-                        fontFamily: "var(--font-mono)", color: "var(--text3)"
-                      }}>
+                      <td style={{ textAlign: "right" }}>
                         {fmtRs(r.base_salary)}
                       </td>
 
                       {/* Payable */}
                       <td style={{ textAlign: "right" }}>
-                        <div style={{
-                          fontSize: 14, fontWeight: 800,
-                          fontFamily: "var(--font-mono)", color: hrCol
-                        }}>
+                        <div style={{ color: hrCol }}>
                           {fmtRs(r.salary_payable)}
                         </div>
                         {r.salary_payable !== r.base_salary && (
-                          <div style={{ fontSize: 9, color: "var(--text3)" }}>
+                          <div style={{ color: "var(--text1)" }}>
                             {hoursPct}% of {fmtRs(r.base_salary)}
                           </div>
                         )}
@@ -1235,7 +1201,7 @@ function PaymentsTab({ staffList }) {
                           {isPaid ? "Paid" : r.payment_status === "no_record" ? "No Record" : "Pending"}
                         </span>
                         {r.paid_date && (
-                          <div style={{ fontSize: 9, color: "var(--text3)", marginTop: 2 }}>{r.paid_date}</div>
+                          <div style={{ marginTop: 2 }}>{r.paid_date}</div>
                         )}
                       </td>
 
@@ -1267,7 +1233,7 @@ function PaymentsTab({ staffList }) {
           {/* Formula legend */}
           <div style={{
             padding: "10px 18px", borderTop: "1px solid var(--border)",
-            fontSize: 11, color: "var(--text3)", display: "flex", gap: 20, flexWrap: "wrap"
+            fontSize: 11, color: "var(--text1)", display: "flex", gap: 20, flexWrap: "wrap"
           }}>
             <span>📊 <b>Att%</b> = Present days ÷ Working days</span>
             <span>⏱ <b>Billable</b> = Worked + OT − Late</span>
@@ -1419,7 +1385,7 @@ export default function Staff() {
               </tr></thead>
               <tbody>
                 {loading ? (
-                  <tr><td colSpan={8} style={{ textAlign: "center", padding: 32, color: "var(--text3)" }}>Loading…</td></tr>
+                  <tr><td colSpan={8} style={{ textAlign: "center", padding: 32, color: "var(--text1)" }}>Loading…</td></tr>
                 ) : staffList.map(s => (
                   <tr key={s.id}>
                     <td>
@@ -1427,22 +1393,16 @@ export default function Staff() {
                         {s.staff_id_display || `S${String(s.id).padStart(4, "0")}`}
                       </span>
                     </td>
-                    <td><b>{s.name}</b></td>
+                    <td>{s.name}</td>
                     <td><span className="badge badge-blue">{s.role}</span></td>
-                    <td style={{ fontSize: 12, color: "var(--text2)" }}>
-                      {s.shift_template_name ? (
-                        <span style={{ color: "var(--accent)", fontWeight: 600 }}>
-                          {s.shift_template_name}
-                        </span>
-                      ) : (
-                        <span style={{ color: "var(--text3)", fontSize: 11 }}>No shift assigned</span>
-                      )}
+                    <td>
+                      {s.shift_template_name || <span>No shift assigned</span>}
                     </td>
-                    <td style={{ color: "var(--text3)" }}>{s.phone}</td>
-                    <td style={{ fontFamily: "var(--font-mono)", fontSize: 12, color: "var(--accent)" }}>
+                    <td>{s.phone}</td>
+                    <td>
                       ₹{Number(s.salary).toLocaleString("en-IN")}
                       {s.role === "trainer" && s.personal_trainer_amt && (
-                        <div style={{ fontSize: 10, color: "var(--text3)", marginTop: 2 }}>
+                        <div style={{ marginTop: 2 }}>
                           PT: ₹{Number(s.personal_trainer_amt).toLocaleString("en-IN")}
                         </div>
                       )}
@@ -1495,7 +1455,7 @@ export default function Staff() {
                   <span style={{
                     padding: "2px 8px", borderRadius: 6, fontSize: 11, fontWeight: 700,
                     background: meta?.bg || "var(--surface2)",
-                    color: meta?.color || "var(--text2)",
+                    color: meta?.color || "var(--text1)",
                     width: "fit-content",
                   }}>
                     {meta?.label || a.status}
@@ -1504,7 +1464,7 @@ export default function Staff() {
                     In: {a.check_in || "—"} · Out: {a.check_out || "—"}
                   </span>
                   {wkFmt && (
-                    <span className="mobile-card__meta" style={{ color: "var(--text2)" }}>
+                    <span className="mobile-card__meta" style={{ color: "var(--text1)" }}>
                       Worked: {wkFmt}
                       {a.late_minutes > 0 ? ` · Late +${a.late_minutes}m` : ""}
                       {a.overtime_minutes > 0 ? ` · OT +${a.overtime_minutes}m` : ""}
@@ -1521,10 +1481,10 @@ export default function Staff() {
             padding: "14px 18px", borderBottom: "1px solid var(--border)",
             display: "flex", justifyContent: "space-between", alignItems: "center"
           }}>
-            <span style={{ fontFamily: "var(--font-display)", fontSize: 14, fontWeight: 700 }}>
+            <span style={{ fontFamily: "var(--font-body)", fontSize: 14, fontWeight: 700 }}>
               Today's Attendance
             </span>
-            <span style={{ fontSize: 11, color: "var(--text3)" }}>
+            <span style={{ fontSize: 11, color: "var(--text1)" }}>
               Worked / Late / OT only show for staff with a Shift Template assigned
             </span>
           </div>
@@ -1544,9 +1504,9 @@ export default function Staff() {
               </tr></thead>
               <tbody>
                 {loading ? (
-                  <tr><td colSpan={10} style={{ textAlign: "center", padding: 32, color: "var(--text3)" }}>Loading…</td></tr>
+                  <tr><td colSpan={10} style={{ textAlign: "center", padding: 32, color: "var(--text1)" }}>Loading…</td></tr>
                 ) : attendance.length === 0 ? (
-                  <tr><td colSpan={10} style={{ textAlign: "center", padding: 32, color: "var(--text3)" }}>
+                  <tr><td colSpan={10} style={{ textAlign: "center", padding: 32, color: "var(--text1)" }}>
                     No attendance marked today.
                   </td></tr>
                 ) : attendance.map(a => {
@@ -1567,49 +1527,23 @@ export default function Staff() {
 
                   return (
                     <tr key={a.id}>
-                      <td><b>{a.staff_name}</b></td>
-                      <td style={{ fontSize: 11, color: "var(--text2)" }}>
-                        {shiftTmpl || <span style={{ color: "var(--text3)" }}>No shift</span>}
-                      </td>
-                      <td style={{ fontSize: 11, fontFamily: "var(--font-mono)", color: "var(--text3)" }}>
-                        {hasShift && shiftMins ? fmt_mins(shiftMins) : "—"}
-                      </td>
+                      <td>{a.staff_name}</td>
+                      <td>{shiftTmpl || "No shift"}</td>
+                      <td>{hasShift && shiftMins ? fmt_mins(shiftMins) : "—"}</td>
                       <td>
                         <span style={{
-                          padding: "2px 8px", borderRadius: 6, fontSize: 11, fontWeight: 700,
+                          padding: "2px 8px", borderRadius: 6,
                           background: STATUS_META[a.status]?.bg || "var(--surface2)",
-                          color: STATUS_META[a.status]?.color || "var(--text2)",
                         }}>
                           {STATUS_META[a.status]?.label || a.status}
                         </span>
                       </td>
-                      <td style={{ fontFamily: "var(--font-mono)", fontSize: 12, color: "var(--teal)" }}>
-                        {a.check_in || "—"}
-                      </td>
-                      <td style={{ fontFamily: "var(--font-mono)", fontSize: 12, color: "var(--text2)" }}>
-                        {a.check_out || "—"}
-                      </td>
-                      <td style={{
-                        fontSize: 12, color: a.worked_minutes > 0 ? "var(--text1)" : "var(--text3)",
-                        fontFamily: "var(--font-mono)"
-                      }}>
-                        {a.worked_minutes > 0 ? fmt_mins(a.worked_minutes) : (a.check_in && !a.check_out ? "In progress" : "—")}
-                      </td>
-                      <td style={{ fontSize: 11, fontWeight: 700, color: vsShift?.color || "var(--text3)" }}>
-                        {vsShift?.label || (hasShift ? "—" : <span style={{ color: "var(--text3)", fontSize: 10 }}>no shift</span>)}
-                      </td>
-                      <td style={{
-                        fontSize: 12, fontWeight: 700,
-                        color: a.late_minutes > 0 ? "#f97316" : "var(--text3)"
-                      }}>
-                        {a.late_minutes > 0 ? `+${a.late_minutes}m` : (hasShift ? "—" : <span style={{ fontSize: 10 }}>—</span>)}
-                      </td>
-                      <td style={{
-                        fontSize: 12, fontWeight: 700,
-                        color: a.overtime_minutes > 0 ? "#3b82f6" : "var(--text3)"
-                      }}>
-                        {a.overtime_minutes > 0 ? `+${a.overtime_minutes}m` : (hasShift ? "—" : <span style={{ fontSize: 10 }}>—</span>)}
-                      </td>
+                      <td>{a.check_in || "—"}</td>
+                      <td>{a.check_out || "—"}</td>
+                      <td>{a.worked_minutes > 0 ? fmt_mins(a.worked_minutes) : (a.check_in && !a.check_out ? "In progress" : "—")}</td>
+                      <td>{vsShift?.label || (hasShift ? "—" : "no shift")}</td>
+                      <td>{a.late_minutes > 0 ? `+${a.late_minutes}m` : "—"}</td>
+                      <td>{a.overtime_minutes > 0 ? `+${a.overtime_minutes}m` : "—"}</td>
                     </tr>
                   );
                 })}
